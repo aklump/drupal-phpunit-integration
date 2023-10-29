@@ -38,7 +38,7 @@
     </extensions>
     <testsuites>
         <testsuite name="self">
-            <directory>src</directory>
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="false">
