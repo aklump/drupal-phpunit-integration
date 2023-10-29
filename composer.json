@@ -1,0 +1,28 @@
+{
+  "name": "aklump/drupal-phpunit-integration",
+  "description": "A framework for integration testing in Drupal 8+ using PHPUnit.",
+  "homepage": "https://github.com/aklump/drupal-phpunit-integration",
+  "authors": [
+    {
+      "name": "Aaron Klump",
+      "homepage": "http://www.intheloftstudios.com",
+      "role": "Lead Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "AKlump\\Drupal\\PHPUnit\\Integration\\": "src"
+    }
+  },
+  "require": {
+    "php": ">=7.4",
+    "phpunit/phpunit": "^9"
+  },
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "post-package-install": [
+      "cp vendor/aklump/drupal-phpunit-integration/init/phpunit.xml.dist phpunit.xml",
+      "mkdir -p ../pin && cp vendor/aklump/drupal-phpunit-integration/init/run_integration_tests.sh ../pin/"
+    ]
+  }
+}

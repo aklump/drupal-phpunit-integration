@@ -1,0 +1,5 @@
+*.cache
+reports/
+vendor/
+.idea/
+composer.lock
