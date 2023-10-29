@@ -11,7 +11,10 @@
   ],
   "autoload": {
     "psr-4": {
-      "AKlump\\Drupal\\PHPUnit\\Integration\\": "src"
+      "AKlump\\Drupal\\PHPUnit\\Integration\\": [
+        "src",
+        "tests"
+      ]
     }
   },
   "require": {

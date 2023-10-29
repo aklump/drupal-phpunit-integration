@@ -3,8 +3,9 @@
 namespace AKlump\Drupal\PHPUnit\Integration\Framework\MockObject;
 
 use Drupal\Core\Field\FieldItemInterface;
+use PHPUnit\Framework\TestCase;
 
-final class MockDrupalEntityTraitTest extends \PHPUnit\Framework\TestCase {
+final class MockDrupalEntityTraitTest extends TestCase {
 
   use MockDrupalEntityTrait;
 

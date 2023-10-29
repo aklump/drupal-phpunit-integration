@@ -40,16 +40,13 @@ cp vendor/aklump/drupal-phpunit-integration/init/run_integration_tests.sh ../bin
 1. `cd` into the directory above web root.
 2. Run tests with `bin/run_integration_tests.sh`
 
-## Test Support Classes
+## Provided Test Support Classes
+
+Have a look in the following directories:
+
+* _vendor/aklump/drupal-phpunit-integration/src/Framework/MockObject_
+
+## Custom Test Support Classes
 
 * The directory _src/_ is namespaced to `AKlump\Drupal\PHPUnit\Integration`
 * Place shared traits and other test support in _src/_ using said namespace.
-
-## Project Development Notes
-
-### How to Run Self Tests
-
-```shell
-export DRUPAL_ROOT=/path/to/drupal/web
-vendor/bin/phpunit -c vendor/aklump/drupal-phpunit-integration/self.xml
-```
