@@ -7,7 +7,7 @@ mkdir -p tests_integration/src
 cd tests_integration
 echo "vendor/\ncomposer.lock\n*.cache\n" > .gitignore
 echo '{"autoload":{"psr-4":{"\\\\AKlump\\\\Drupal\\\\PHPUnit\\\\Integration\\\\":"src"}},"repositories":[{"type":"github","url":"https://github.com/aklump/drupal-phpunit-integration"}]}' > composer.json
-composer require aklump/drupal-phpunit-integration:@dev
+composer require aklump/drupal-phpunit-integration
 ```
 
 ## Config File
