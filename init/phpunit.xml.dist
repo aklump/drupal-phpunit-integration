@@ -43,7 +43,7 @@
     </testsuites>
     <coverage processUncoveredFiles="false">
         <include>
-            <directory suffix=".php">../install/composer/loft_core/src
+            <directory suffix=".php">../web/modules/custom/my_module/src
             </directory>
         </include>
     </coverage>

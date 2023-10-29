@@ -10,6 +10,17 @@ echo '{"autoload":{"psr-4":{"\\\\AKlump\\\\Drupal\\\\PHPUnit\\\\Integration\\\\"
 composer require aklump/drupal-phpunit-integration
 ```
 
+## Update
+
+To get the newest version of this project:
+
+```shell
+cd tests_integration
+composer require aklump/drupal-phpunit-integration
+```
+
+This will only update the _vendor/_ directory so your changes and files are not affected.
+
 ## Config File
 
 ```shell
