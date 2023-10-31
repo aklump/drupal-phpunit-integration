@@ -24,6 +24,9 @@ require_once __DIR__ . '/src/Runner/BootstrapCache.php';
 require_once __DIR__ . '/src/Runner/AutoloadDev.php';
 
 $drupal_root = $_ENV['DRUPAL_ROOT'] ?? getenv('DRUPAL_ROOT');
+if (!$drupal_root || !file_exists($drupal_root) || !is_dir($drupal_root)) {
+  die(sprintf("DRUPAL_ROOT must be a path to an existing Drupal webroot to test.  The value %s is invalid.\n", $drupal_root));
+}
 
 $extra_psr4 = ['AKlump\\Drupal\\PHPUnit\\Integration\\' => __DIR__ . '/src/'];
 // autoload-dev will not be loaded from the packages by default because it's a
