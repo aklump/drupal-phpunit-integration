@@ -48,7 +48,10 @@ $bootstrap = new BootstrapCache(__DIR__, $extra_psr4);
 if (in_array('--flush', $GLOBALS['argv'])) {
   $bootstrap->flush();
   echo "The Drupal autoload map cache has been flushed." . PHP_EOL;
-  echo "Rebuilding cache; this takes a moment..." . PHP_EOL;
+}
+
+if (!$bootstrap->cacheExists()) {
+  echo "Building cache; this takes a moment..." . PHP_EOL;
 }
 
 $bootstrap->require("$drupal_root/core/tests/bootstrap.php");

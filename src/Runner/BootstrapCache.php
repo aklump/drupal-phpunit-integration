@@ -32,13 +32,21 @@ final class BootstrapCache {
   }
 
   /**
+   * @return bool
+   *   True if the cache is built.
+   */
+  public function cacheExists(): bool {
+    return file_exists($this->cachePath);
+  }
+
+  /**
    * Flush the cache.
    *
    * @return bool
    *   False if the file could not be deleted.
    */
   public function flush(): bool {
-    if (file_exists($this->cachePath)) {
+    if ($this->cacheExists()) {
       return unlink($this->cachePath);
     }
 
@@ -48,16 +56,17 @@ final class BootstrapCache {
   /**
    * Require core/tests/bootstrap.php with extra caching.
    *
-   * Use this to vastly speed up integration testing in Drupal 8.  The core bootstrap
-   * file uses a recursive directory iterator, which slows down tests.  This
-   * method will cache the results so that subsequent bootstraps will skip the
-   * discovery phase.  This speeds things up very much.
+   * Use this to vastly speed up integration testing in Drupal 8.  The core
+   * bootstrap file uses a recursive directory iterator, which slows down
+   * tests.  This method will cache the results so that subsequent bootstraps
+   * will skip the discovery phase.  This speeds things up very much.
    *
    * @param string $drupal_tests_bootstrap
    *   Absolute path to Drupal's test boostrap file e.g.,
    *   "web/core/tests/bootstrap.php"
    * @param array $extra_autoload_psr4
-   *   Include an array as you might in composer.json, however the paths need to
+   *   Include an array as you might in composer.json, however the paths need
+   *   to
    *   be absolute.
    *
    * @return \TestsPhpUnit\Runner\BootstrapCache
