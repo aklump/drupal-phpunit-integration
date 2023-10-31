@@ -7,20 +7,15 @@ mkdir -p tests_integration/src
 cd tests_integration
 echo "vendor/\ncomposer.lock\n*.cache\n" > .gitignore
 echo '{"autoload":{"psr-4":{"\\\\AKlump\\\\Drupal\\\\PHPUnit\\\\Integration\\\\":"src"}},"repositories":[{"type":"github","url":"https://github.com/aklump/drupal-phpunit-integration"}]}' > composer.json
-composer require aklump/drupal-phpunit-integration
+composer require aklump/drupal-phpunit-integration:^0
 ```
 
 ## Update
 
-To get the newest version of this project:
+To get the newest version of this project use `composer update` as usual.
 
-```shell
-cd tests_integration
-composer require aklump/drupal-phpunit-integration
-```
-
-This will only update the _vendor/_ directory so your changes and files are not
-affected.
+**This will only update the _vendor/_ directory so your changes and files
+in _tests_integration_ are not affected.**
 
 ## Config File
 
