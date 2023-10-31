@@ -3,6 +3,10 @@
 namespace AKlump\Drupal\PHPUnit\Integration\Framework\MockObject;
 
 
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
+use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
+use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\user\UserInterface;
 
@@ -15,7 +19,7 @@ trait MockDrupalEntityTrait {
    *    Keyed by the field name. Each value is an array representing the field
    *    items.  Each of those arrays is an array representing the item data.
    *
-   * @return \Drupal\Core\Entity\FieldableEntityInterface|(\object&\PHPUnit\Framework\MockObject\MockObject)|(\object&\PHPUnit\Framework\MockObject\MockObject&\Drupal\Core\Entity\FieldableEntityInterface)|\PHPUnit\Framework\MockObject\MockObject|(\PHPUnit\Framework\MockObject\MockObject&\Drupal\Core\Entity\FieldableEntityInterface)
+   * @return (\Drupal\user\UserInterface&\PHPUnit\Framework\MockObject\MockObject)
    */
   public function createUserMock(array $fields = []) {
     return $this->createEntityMock('user', 'user', $fields, 'User', UserInterface::class);
@@ -32,15 +36,15 @@ trait MockDrupalEntityTrait {
    * @param string $entity_type_label
    *   Optional, otherwise $entity_type_id will be used.
    *
-   * @return \Drupal\Core\Entity\FieldableEntityInterface|(\Drupal\Core\Entity\FieldableEntityInterface&\object&\PHPUnit\Framework\MockObject\MockObject)|(\Drupal\Core\Entity\FieldableEntityInterface&\PHPUnit\Framework\MockObject\MockObject)|(\object&\PHPUnit\Framework\MockObject\MockObject)|\PHPUnit\Framework\MockObject\MockObject
+   * @return (\Drupal\Core\Entity\EntityInterface&\PHPUnit\Framework\MockObject\MockObject)
    */
   public function createEntityMock(string $entity_type_id, string $bundle, array $fields = [], string $entity_type_label = '', string $class_to_mock = NULL) {
-    $class_to_mock = $class_to_mock ?? \Drupal\Core\Entity\FieldableEntityInterface::class;
+    $class_to_mock = $class_to_mock ?? FieldableEntityInterface::class;
 
     $mock_entity = $this->createConfiguredMock($class_to_mock, [
       'getEntityTypeId' => $entity_type_id,
       'bundle' => $bundle,
-      'getEntityType' => $this->createConfiguredMock(\Drupal\Core\Entity\EntityTypeInterface::class, [
+      'getEntityType' => $this->createConfiguredMock(EntityTypeInterface::class, [
         'getLabel' => $entity_type_label ?: $entity_type_id,
       ]),
     ]);
@@ -49,7 +53,7 @@ trait MockDrupalEntityTrait {
       $fields[$field_name] = $this->createFieldItemListMock($field);
       $fields[$field_name]->method('getName')->willReturn($field_name);
       $fields[$field_name]->method('getParent')->willReturn(
-        $this->createConfiguredMock(\Drupal\Core\Entity\Plugin\DataType\EntityAdapter::class, [
+        $this->createConfiguredMock(EntityAdapter::class, [
           'getEntity' => $mock_entity,
         ])
       );
@@ -93,6 +97,9 @@ trait MockDrupalEntityTrait {
     $field_item_list->method('getValue')->willReturn($field_item_list_value);
 
     foreach ($field_item_list_value as $index => $field_item) {
+      if (is_object($field_item)) {
+        continue;
+      }
       $field_item_list_value[$index] = $this->_getFieldItemMock($field_item);
       $field_item_list_value[$index]->method('getName')->willReturn($index);
       $field_item_list_value[$index]->method('getParent')
@@ -126,7 +133,7 @@ trait MockDrupalEntityTrait {
     $callback = function ($key) use ($field_item_value) {
       return $field_item_value[$key] ?? NULL;
     };
-    $field_item = $this->createMock(\Drupal\Core\Field\FieldItemInterface::class);
+    $field_item = $this->createMock(FieldItemInterface::class);
     $field_item->method('getValue')->willReturn($field_item_value);
     $field_item->method('__get')->willReturnCallback($callback);
     $field_item->method('get')->willReturnCallback($callback);
