@@ -39,12 +39,13 @@ if ($autoload_dev_psr4) {
 
 $bootstrap = new BootstrapCache(__DIR__, $extra_psr4);
 
-// Allow this to be called with --flush to dump our caching layer.  This caching
-// layer greatly speeds up the time it takes to run the first test.
-if (in_array('flush', $GLOBALS['argv'])) {
+// Allow this to be called with --flush to dump our caching layer before running
+// the tests..  This caching layer greatly speeds up the time it takes to run
+// the first test.
+if (in_array('--flush', $GLOBALS['argv'])) {
   $bootstrap->flush();
   echo "The Drupal autoload map cache has been flushed." . PHP_EOL;
-  exit(0);
+  echo "Rebuilding cache; this takes a moment..." . PHP_EOL;
 }
 
 $bootstrap->require("$drupal_root/core/tests/bootstrap.php");

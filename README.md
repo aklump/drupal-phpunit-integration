@@ -19,7 +19,8 @@ cd tests_integration
 composer require aklump/drupal-phpunit-integration
 ```
 
-This will only update the _vendor/_ directory so your changes and files are not affected.
+This will only update the _vendor/_ directory so your changes and files are not
+affected.
 
 ## Config File
 
@@ -50,6 +51,10 @@ cp vendor/aklump/drupal-phpunit-integration/init/run_integration_tests.sh ../bin
 
 1. `cd` into the directory above web root.
 2. Run tests with `bin/run_integration_tests.sh`
+
+The first time the tests are run, a cache is built that speeds up subsequent
+runs. To flush these caches, add the `--flush` parameter,
+e.g. `bin/run_integration_tests.sh --flush`.
 
 ## Provided Test Support Classes
 
