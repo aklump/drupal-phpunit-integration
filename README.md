@@ -7,7 +7,7 @@
 ```shell
 mkdir -p tests_integration/src
 cd tests_integration
-echo "vendor/\ncomposer.lock\n*.cache\n" > .gitignore
+echo "vendor/\n*.cache\n" > .gitignore
 echo '{"autoload":{"psr-4":{"\\\\AKlump\\\\Drupal\\\\PHPUnit\\\\Integration\\\\":"src"}},"repositories":[{"type":"github","url":"https://github.com/aklump/drupal-phpunit-integration"}]}' > composer.json
 composer require aklump/drupal-phpunit-integration:^0
 ```
@@ -115,7 +115,7 @@ web/modules/custom
             └── phpunit.xml
 ```
 
-Given the above module file structure, you can see two directories in _tests_.  _tests/Unit/FooTest.php_ can be run using _alpha/bin/run_unit_tests.sh_ and has no Drupal dependencies. Therefore it's straight-up PHPUnit stuff. On the other hand,  _tests/Integration/FooTest.php_ cannot be run in the same manner as it has Drupal class dependencies, hence it "integrates" with Drupal.  For that you must use _tests_integration/bin/run_integration_tests.sh_.
+Given the above module file structure, you can see two directories in _tests_.  _tests/Unit/FooTest.php_ can be run using _alpha/bin/run_unit_tests.sh_ and has no Drupal dependencies. Therefore it's straight-up PHPUnit stuff. On the other hand,  _tests/Integration/FooTest.php_ cannot be run in the same manner as it has Drupal class dependencies, hence it "integrates" with Drupal. For that you must use _tests_integration/bin/run_integration_tests.sh_.
 
 **Use `namespace Drupal\Tests\alpha\Unit;` for unit test classes.**
 
@@ -131,6 +131,10 @@ Unit tests are only mentioned here to distinguish the difference. This package c
   </testsuite>
 </testsuites>
 ```
+
+## What About _tests_integration/composer.lock_?
+
+It's up to you, but it seems like a good idea to source code commit this file as it will provide more stability to your app for tests passing if you have to reinstall dependencies.
 
 ## How to Update this Package
 
