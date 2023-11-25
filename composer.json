@@ -19,7 +19,9 @@
   },
   "require": {
     "php": ">=7.4",
-    "phpunit/phpunit": "^9"
+    "phpunit/phpunit": "^9",
+    "ext-json": "*",
+    "ext-simplexml": "*"
   },
   "license": "GPL-2.0-or-later",
   "scripts": {

@@ -29,18 +29,23 @@ if (!$drupal_root || !file_exists($drupal_root) || !is_dir($drupal_root)) {
 }
 
 $extra_psr4 = ['AKlump\\Drupal\\PHPUnit\\Integration\\' => __DIR__ . '/src/'];
-// autoload-dev will not be loaded from the packages by default because it's a
-// root-only key, however it's best practice
-// (https://getcomposer.org/doc/04-schema.md#autoload-dev) to use autoload-dev
-// for test-only classes; these will not load without this next step which
-// bubbles up all the autoload-dev PSR-4 values into Drupal's autoloader.
-$autoload_dev_psr4 = (new AutoloadDev(__DIR__ . '/phpunit.xml', $drupal_root))
-                       ->getAutoloadDev()['psr-4'] ?? [];
-if ($autoload_dev_psr4) {
-  $extra_psr4 = array_merge($extra_psr4, $autoload_dev_psr4);
+
+/** @var string $install_path The path to presumably "tests_integration/" */
+$install_path = explode('vendor/', __DIR__)[0] ?? __DIR__;
+if (file_exists($install_path . '/phpunit.xml')) {
+  // autoload-dev will not be loaded from the packages by default because it's a
+  // root-only key, however it's best practice
+  // (https://getcomposer.org/doc/04-schema.md#autoload-dev) to use autoload-dev
+  // for test-only classes; these will not load without this next step which
+  // bubbles up all the autoload-dev PSR-4 values into Drupal's autoloader.
+  $autoload_dev_psr4 = (new AutoloadDev($install_path . '/phpunit.xml', $drupal_root))
+                         ->getAutoloadDev()['psr-4'] ?? [];
+  if ($autoload_dev_psr4) {
+    $extra_psr4 = array_merge($extra_psr4, $autoload_dev_psr4);
+  }
 }
 
-$bootstrap = new BootstrapCache(__DIR__, $extra_psr4);
+$bootstrap = new BootstrapCache($install_path, $extra_psr4);
 
 // Allow this to be called with --flush to dump our caching layer before running
 // the tests..  This caching layer greatly speeds up the time it takes to run

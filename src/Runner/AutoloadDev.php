@@ -24,6 +24,9 @@ class AutoloadDev {
    *   (Optional) All returned paths will be made relative to this.
    */
   public function __construct(string $path_to_integration_phpunit, string $base_dir) {
+    if (!file_exists($path_to_integration_phpunit)) {
+      throw new \InvalidArgumentException(sprintf('$path_to_integration_phpunit does not exist: %s', $path_to_integration_phpunit));
+    }
     $this->pathToPhpUnit = $path_to_integration_phpunit;
     $this->baseDir = realpath($base_dir);
   }
