@@ -144,3 +144,14 @@ composer update
 **This will only update the _vendor/_ directory so your changes and files
 in _tests_integration_ are not affected.**
 
+You may want to diff the runner and config file from time to time and cherry pick as necessary. _CHANGELOG.md_ should make note of any changes to these files.
+
+```php
+cd tests_integration
+diff vendor/aklump/drupal-phpunit-integration/init/run_integration_tests.sh ../bin/run_integration_tests.sh
+```
+
+```php
+cd tests_integration
+diff vendor/aklump/drupal-phpunit-integration/init/phpunit.xml.dist phpunit.xml
+```
