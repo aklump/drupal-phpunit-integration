@@ -1,6 +1,8 @@
-# Drupal PHPUnit Integration Testing
+# Drupal PHPUnit Integration Testing Framework
 
-## Installation
+## How to Install
+
+**You must execute the following in the directory above _web_.**  It will install this package in a directory called _tests_integration_.
 
 ```shell
 mkdir -p tests_integration/src
@@ -10,18 +12,59 @@ echo '{"autoload":{"psr-4":{"\\\\AKlump\\\\Drupal\\\\PHPUnit\\\\Integration\\\\"
 composer require aklump/drupal-phpunit-integration:^0
 ```
 
-## Update
+This will create the file for running your tests:
 
-To get the newest version of this project use `composer update` as usual.
+```shell
+mkdir -p ../bin
+cp vendor/aklump/drupal-phpunit-integration/init/run_integration_tests.sh ../bin/
+```
 
-**This will only update the _vendor/_ directory so your changes and files
-in _tests_integration_ are not affected.**
-
-## Config File
+This will create _phpunit.xml_ for configuring testing.
 
 ```shell
 cp vendor/aklump/drupal-phpunit-integration/init/phpunit.xml.dist phpunit.xml
 ```
+
+## Test Class Namespace & File Structure
+
+**Before continuing please read the section _Difference Between Integration Tests and Unit Tests_ so you create the tests appropriately.**
+
+Create your first integration test class:
+
+```
+web/modules/custom
+└── alpha
+    └── tests
+        └── Integration
+            └── FooTest.php
+```
+
+_FooTest.php_
+
+```php
+namespace Drupal\Tests\alpha\Integration;
+
+class FooTest extends \PHPUnit\Framework\TestCase {
+```
+
+Ensure your module's _web/modules/custom/composer.json_ has the proper autoloading configuration:
+
+```json
+{
+  "autoload": {
+    "psr-4": {
+      "Drupal\\alpha\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Drupal\\Tests\\alpha\\": "./tests/"
+    }
+  }
+}
+```
+
+## Config File
 
 Now open _phpunit.xml_ and add one or more integration test directories:
 
@@ -35,13 +78,6 @@ Now open _phpunit.xml_ and add one or more integration test directories:
 </testsuites>
 ```
 
-## Runner File
-
-```shell
-mkdir -p ../bin
-cp vendor/aklump/drupal-phpunit-integration/init/run_integration_tests.sh ../bin/
-```
-
 ## Run Your Tests
 
 1. `cd` into the directory above web root.
@@ -51,13 +87,60 @@ The first time the tests are run, a cache is built that speeds up subsequent
 runs. To flush these caches, add the `--flush` parameter,
 e.g. `bin/run_integration_tests.sh --flush`.
 
-## Provided Test Support Classes
+## Built-in Test Support Classes
 
 Have a look in the following directories:
 
-* _vendor/aklump/drupal-phpunit-integration/src/Framework/MockObject_
+* _tests_integration/vendor/aklump/drupal-phpunit-integration/src/Framework/MockObject_
 
 ## Custom Test Support Classes
 
-* The directory _src/_ is namespaced to `AKlump\Drupal\PHPUnit\Integration`
+* The directory _tests_integration/src/_ is namespaced to `AKlump\Drupal\PHPUnit\Integration`
 * Place shared traits and other test support in _src/_ using said namespace.
+
+## Difference Between Integration Tests and Unit Tests
+
+```
+web/modules/custom
+└── alpha
+    ├── bin
+    │   └── run_unit_tests.sh
+    ├── src
+    │   └── Foo.php
+    └── tests
+        ├── Integration
+        │   └── FooTest.php
+        └── Unit
+            ├── FooTest.php
+            └── phpunit.xml
+```
+
+Given the above module file structure, you can see two directories in _tests_.  _tests/Unit/FooTest.php_ can be run using _bin/run_unit_tests.sh_ and has no Drupal dependencies. Therefore it's straight-up PHPUnit stuff. On the other hand,  _tests/Integration/FooTest.php_ cannot be run in the same manner as it has Drupal class dependencies, hence it "integrates" with Drupal.
+
+**Use `namespace Drupal\Tests\alpha\Unit;` for unit test classes.**
+
+Unit tests are only mentioned here to distinguish the difference. This package concerns itself with Integration tests, with one caveat: it is convenient to add the _Unit_ directory to  _tests_integration/phpunit.xml_ so that Unit tests are run at the same time as the Integration tests. This is a good idea and encouraged. In our example, it will look like this.
+
+```xml
+<testsuites>
+  <testsuite name="unit">
+    <directory>../web/modules/custom/alpha/tests/Unit/</directory>
+  </testsuite>
+  <testsuite name="integration">
+    <directory>../web/modules/custom/alpha/tests/Integration/</directory>
+  </testsuite>
+</testsuites>
+```
+
+## How to Update this Package
+
+To get the newest version of _aklump/drupal-phpunit-integration_:
+
+```bash
+cd tests_integration
+composer update
+```
+
+**This will only update the _vendor/_ directory so your changes and files
+in _tests_integration_ are not affected.**
+

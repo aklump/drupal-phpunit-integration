@@ -37,9 +37,12 @@
                 class="AKlump\Drupal\PHPUnit\Integration\Runner\Extension\DynamicConfig"/>
     </extensions>
     <testsuites>
-        <testsuite name="integration">
-            <directory>../web/modules/custom/my_module/tests/Integration/</directory>
-        </testsuite>
+        <!--        <testsuite name="unit">-->
+        <!--            <directory>../web/modules/custom/my_module/tests/Unit/</directory>-->
+        <!--        </testsuite>-->
+        <!--        <testsuite name="integration">-->
+        <!--            <directory>../web/modules/custom/my_module/tests/Integration/</directory>-->
+        <!--        </testsuite>-->
     </testsuites>
     <coverage processUncoveredFiles="false">
         <include>
