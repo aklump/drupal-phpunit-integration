@@ -66,7 +66,7 @@ Ensure your module's _web/modules/custom/composer.json_ has the proper autoloadi
 
 ## Config File
 
-Now open _phpunit.xml_ and add one or more integration test directories:
+Now open _tests_integration/phpunit.xml_ and add one or more integration test directories:
 
 ```xml
 <testsuites>
@@ -115,7 +115,7 @@ web/modules/custom
             └── phpunit.xml
 ```
 
-Given the above module file structure, you can see two directories in _tests_.  _tests/Unit/FooTest.php_ can be run using _bin/run_unit_tests.sh_ and has no Drupal dependencies. Therefore it's straight-up PHPUnit stuff. On the other hand,  _tests/Integration/FooTest.php_ cannot be run in the same manner as it has Drupal class dependencies, hence it "integrates" with Drupal.
+Given the above module file structure, you can see two directories in _tests_.  _tests/Unit/FooTest.php_ can be run using _alpha/bin/run_unit_tests.sh_ and has no Drupal dependencies. Therefore it's straight-up PHPUnit stuff. On the other hand,  _tests/Integration/FooTest.php_ cannot be run in the same manner as it has Drupal class dependencies, hence it "integrates" with Drupal.  For that you must use _tests_integration/bin/run_integration_tests.sh_.
 
 **Use `namespace Drupal\Tests\alpha\Unit;` for unit test classes.**
 
@@ -144,14 +144,10 @@ composer update
 **This will only update the _vendor/_ directory so your changes and files
 in _tests_integration_ are not affected.**
 
-You may want to diff the runner and config file from time to time and cherry pick as necessary. _CHANGELOG.md_ should make note of any changes to these files.
+You may want to diff _run_integration_tests.sh_ and _phpunit.xml_ from time to time and cherry pick as necessary, however, _CHANGELOG.md_ should make note of any changes to these files.
 
 ```php
 cd tests_integration
 diff vendor/aklump/drupal-phpunit-integration/init/run_integration_tests.sh ../bin/run_integration_tests.sh
-```
-
-```php
-cd tests_integration
 diff vendor/aklump/drupal-phpunit-integration/init/phpunit.xml.dist phpunit.xml
 ```
