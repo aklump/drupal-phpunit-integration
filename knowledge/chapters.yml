@@ -1,0 +1,10 @@
+chapter_order:
+  - general
+  - dev
+chapter_info:
+  -
+    id: general
+    title: General
+  -
+    id: dev
+    title: Dev
