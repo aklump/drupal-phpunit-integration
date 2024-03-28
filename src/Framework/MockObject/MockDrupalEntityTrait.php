@@ -123,6 +123,7 @@ trait MockDrupalEntityTrait {
     };
     $field_item_list->method('__get')->willReturnCallback($callback);
     $field_item_list->method('get')->willReturnCallback($callback);
+    $field_item_list->method('count')->willReturn(count($field_item_list_value));
 
     (new MakeMockIterable())($field_item_list, $field_item_list_value);
 
