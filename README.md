@@ -2,7 +2,7 @@
 
 ## How to Install
 
-**You must execute the following in the directory above _web_.**  It will install this package in a directory called _tests_integration_.
+**You must execute the following in the directory above _web_.**  It will install this package in a directory called _tests\_integration_.
 
 ```shell
 mkdir -p tests_integration/src
@@ -132,7 +132,7 @@ Unit tests are only mentioned here to distinguish the difference. This package c
 </testsuites>
 ```
 
-## What About _tests_integration/composer.lock_?
+## What About _tests\_integration/composer.lock_?
 
 It's up to you, but it seems like a good idea to source code commit this file as it will provide more stability to your app for tests passing if you have to reinstall dependencies.
 
