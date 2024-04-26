@@ -16,8 +16,6 @@ done
 cd tests_integration
 ./vendor/bin/phpunit -c phpunit.xml "${phpunit_args[@]}"
 #./vendor/bin/phpunit -c phpunit.xml --testdox "${phpunit_args[@]}"
-#export XDEBUG_MODE=$XDEBUG_MODE,coverage;./vendor/bin/phpunit -c phpunit.xml "${phpunit_args[@]}" --coverage-html=./reports
-#echo "reports/index.html"
-
-
-
+coverage="$PWD/reports"
+#export XDEBUG_MODE=$XDEBUG_MODE,coverage;./vendor/bin/phpunit -c phpunit.xml --coverage-html="$coverage" "${phpunit_args[@]}"
+#echo "$coverage/index.html"
