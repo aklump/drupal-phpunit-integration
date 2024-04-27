@@ -19,30 +19,39 @@
 
 use AKlump\Drupal\PHPUnit\Integration\Runner\AutoloadDev;
 use AKlump\Drupal\PHPUnit\Integration\Runner\BootstrapCache;
+use Symfony\Component\Console\Output\OutputInterface;
 
+require_once $_ENV['TESTS_ROOT'] . '/vendor/autoload.php';
 require_once __DIR__ . '/src/Runner/BootstrapCache.php';
 require_once __DIR__ . '/src/Runner/AutoloadDev.php';
 
-$drupal_root = $_ENV['DRUPAL_ROOT'] ?? getenv('DRUPAL_ROOT');
-if (!$drupal_root || !file_exists($drupal_root) || !is_dir($drupal_root)) {
-  die(sprintf("DRUPAL_ROOT must be a path to an existing Drupal webroot to test.  The value %s is invalid.\n", $drupal_root));
+$output = new Symfony\Component\Console\Output\ConsoleOutput();
+if (in_array('--flush', $GLOBALS['argv'])) {
+  $output->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
 }
 
-$extra_psr4 = ['AKlump\\Drupal\\PHPUnit\\Integration\\' => __DIR__ . '/src/'];
+$drupal_root = $_ENV['DRUPAL_ROOT'] ?? getenv('DRUPAL_ROOT');
+if (!$drupal_root || !file_exists($drupal_root) || !is_dir($drupal_root)) {
+  $output->writeln(sprintf("<error>DRUPAL_ROOT must be a path to an existing Drupal webroot to test.  The value %s is invalid.</error>", $drupal_root));
+  exit(1);
+}
 
-/** @var string $install_path The path to presumably "tests_integration/" */
-$install_path = explode('vendor/', __DIR__)[0] ?? __DIR__;
-if (file_exists($install_path . '/phpunit.xml')) {
-  // autoload-dev will not be loaded from the packages by default because it's a
-  // root-only key, however it's best practice
-  // (https://getcomposer.org/doc/04-schema.md#autoload-dev) to use autoload-dev
-  // for test-only classes; these will not load without this next step which
-  // bubbles up all the autoload-dev PSR-4 values into Drupal's autoloader.
-  $autoload_dev_psr4 = (new AutoloadDev($install_path . '/phpunit.xml', $drupal_root))
-                         ->getAutoloadDev()['psr-4'] ?? [];
-  if ($autoload_dev_psr4) {
-    $extra_psr4 = array_merge($extra_psr4, $autoload_dev_psr4);
-  }
+/** @var string $install_path The path to tests_integration/ **/
+$install_path = $_ENV['TESTS_ROOT'] ?? getcwd();
+$phpunit_configuration = "$install_path/phpunit.xml";
+if (!file_exists($phpunit_configuration)) {
+  $output->writeln(sprintf("phpunit.xml not found at %s\nDid you set TESTS_ROOT?\n", $phpunit_configuration));
+  exit(1);
+}
+
+$extra_psr4 = [];
+
+// When we flush, we scan for autoload-dev namespaces.
+if (in_array('--flush', $GLOBALS['argv'])) {
+  $extra_psr4['AKlump\\Drupal\\PHPUnit\\Integration\\'] = [__DIR__ . '/src/'];
+  $autoload_dev = (new AutoloadDev($phpunit_configuration, $drupal_root))
+                    ->getAutoloadDev()['psr-4'] ?? [];
+  $extra_psr4 += $autoload_dev;
 }
 
 $bootstrap = new BootstrapCache($install_path, $extra_psr4);
@@ -52,12 +61,15 @@ $bootstrap = new BootstrapCache($install_path, $extra_psr4);
 // the first test.
 if (in_array('--flush', $GLOBALS['argv'])) {
   $bootstrap->flush();
-  echo "The Drupal autoload map cache has been flushed." . PHP_EOL;
+  $output->writeln('<info>The Drupal autoload map cache has been flushed.</info>');
+  if ($autoload_dev) {
+    $output->writeln(sprintf('<info>Imported %d autoload-dev %s.</info>', count($autoload_dev), count($autoload_dev) === 1 ? 'namespace' : 'namespaces'));
+  }
+  $output->writeln(array_keys($autoload_dev), OutputInterface::VERBOSITY_VERBOSE);
 }
 
 if (!$bootstrap->cacheExists()) {
-  echo "Building cache; this takes a moment..." . PHP_EOL;
+  $output->writeln('<info>Building cache; this takes a moment...</info>');
 }
 
 $bootstrap->require("$drupal_root/core/tests/bootstrap.php");
-

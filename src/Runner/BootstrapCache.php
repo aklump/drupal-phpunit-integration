@@ -27,7 +27,7 @@ final class BootstrapCache {
    *   Path to the directory to use for caching.
    */
   public function __construct(string $cache_dir, array $extra_autoload_psr4 = []) {
-    $this->cachePath = $cache_dir . '/.bootstrap.cache';
+    $this->cachePath = $cache_dir . '/.bootstrap.cache.json';
     $this->addPsr4 = $extra_autoload_psr4;
   }
 
@@ -80,7 +80,9 @@ final class BootstrapCache {
       }
     }
     if ($this->saveCacheFile) {
-      $result = file_put_contents($this->cachePath, json_encode($GLOBALS['namespaces']));
+      $cached_data = $GLOBALS['namespaces'];
+      $cached_data = array_merge($cached_data, $this->addPsr4);
+      $result = file_put_contents($this->cachePath, json_encode($cached_data));
       if (!$result) {
         throw new \InvalidArgumentException(sprintf('Could not save cached autoloaders to %s', $this->cachePath));
       }

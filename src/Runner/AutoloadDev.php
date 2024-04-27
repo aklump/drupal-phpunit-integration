@@ -37,8 +37,12 @@ class AutoloadDev {
    */
   public function getAutoloadDev(): array {
     $result = [];
+
     foreach ($this->getTestSuiteDirectories() as $directory) {
-      $result = array_merge_recursive($result, $this->getAutoloadDevByPackageDirectory($directory));
+      $autoload_dev = $this->getAutoloadDevByPackageDirectory($directory);
+      if ($autoload_dev) {
+        $result = array_merge_recursive($result, $autoload_dev);
+      }
     }
 
     return $this->removeDuplicates($result);
@@ -64,11 +68,6 @@ class AutoloadDev {
     foreach ($data['autoload-dev'] as $key => $values) {
       foreach ($values as &$value) {
         $value = $this->normalizePaths($value, dirname($composer));
-        if ($this->baseDir) {
-          foreach ($value as &$item) {
-            $item = $this->makeRelativeIfPossible($item, $this->baseDir);
-          }
-        }
       }
       $data['autoload-dev'][$key] = $values;
     }

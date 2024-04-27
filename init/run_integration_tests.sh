@@ -3,19 +3,20 @@ s="${BASH_SOURCE[0]}";[[ "$s" ]] || s="${(%):-%N}";while [ -h "$s" ];do d="$(cd 
 
 cd "$__DIR__/.."
 export DRUPAL_ROOT="$(cd ./web && pwd)"
+cd tests_integration
+export TESTS_ROOT="$PWD"
+coverage_reports="$TESTS_ROOT/reports"
 
 phpunit_args=()
 for arg in "$@"; do
   if [[ "$arg" == "--flush" ]]; then
-    php tests_integration/vendor/aklump/drupal-phpunit-integration/bootstrap.php --flush
+    php $TESTS_ROOT/vendor/aklump/drupal-phpunit-integration/bootstrap.php --flush
   else
     phpunit_args=("${phpunit_args[@]}" "$arg")
   fi
 done
 
-cd tests_integration
 ./vendor/bin/phpunit -c phpunit.xml "${phpunit_args[@]}"
 #./vendor/bin/phpunit -c phpunit.xml --testdox "${phpunit_args[@]}"
-coverage="$PWD/reports"
-#export XDEBUG_MODE=$XDEBUG_MODE,coverage;./vendor/bin/phpunit -c phpunit.xml --coverage-html="$coverage" "${phpunit_args[@]}"
-#echo "$coverage/index.html"
+#export XDEBUG_MODE=$XDEBUG_MODE,coverage;./vendor/bin/phpunit -c phpunit.xml --coverage-html="$coverage_reports" "${phpunit_args[@]}"
+#echo "$coverage_reports/index.html"
