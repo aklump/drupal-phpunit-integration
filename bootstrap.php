@@ -26,9 +26,6 @@ require_once __DIR__ . '/src/Runner/BootstrapCache.php';
 require_once __DIR__ . '/src/Runner/AutoloadDev.php';
 
 $output = new Symfony\Component\Console\Output\ConsoleOutput();
-if (in_array('--flush', $GLOBALS['argv'])) {
-  $output->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
-}
 
 $drupal_root = $_ENV['DRUPAL_ROOT'] ?? getenv('DRUPAL_ROOT');
 if (!$drupal_root || !file_exists($drupal_root) || !is_dir($drupal_root)) {
@@ -36,25 +33,19 @@ if (!$drupal_root || !file_exists($drupal_root) || !is_dir($drupal_root)) {
   exit(1);
 }
 
-/** @var string $install_path The path to tests_integration/ **/
+/** @var string $install_path The path to tests_integration/ * */
 $install_path = $_ENV['TESTS_ROOT'] ?? getcwd();
+$bootstrap = new BootstrapCache($install_path);
+$build_cache = in_array('--flush', $GLOBALS['argv']) || !$bootstrap->cacheExists();
+if ($build_cache) {
+  $output->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
+}
+
 $phpunit_configuration = "$install_path/phpunit.xml";
 if (!file_exists($phpunit_configuration)) {
   $output->writeln(sprintf("phpunit.xml not found at %s\nDid you set TESTS_ROOT?\n", $phpunit_configuration));
   exit(1);
 }
-
-$extra_psr4 = [];
-
-// When we flush, we scan for autoload-dev namespaces.
-if (in_array('--flush', $GLOBALS['argv'])) {
-  $extra_psr4['AKlump\\Drupal\\PHPUnit\\Integration\\'] = [__DIR__ . '/src/'];
-  $autoload_dev = (new AutoloadDev($phpunit_configuration, $drupal_root))
-                    ->getAutoloadDev()['psr-4'] ?? [];
-  $extra_psr4 += $autoload_dev;
-}
-
-$bootstrap = new BootstrapCache($install_path, $extra_psr4);
 
 // Allow this to be called with --flush to dump our caching layer before running
 // the tests..  This caching layer greatly speeds up the time it takes to run
@@ -62,13 +53,17 @@ $bootstrap = new BootstrapCache($install_path, $extra_psr4);
 if (in_array('--flush', $GLOBALS['argv'])) {
   $bootstrap->flush();
   $output->writeln('<info>The Drupal autoload map cache has been flushed.</info>');
-  if ($autoload_dev) {
-    $output->writeln(sprintf('<info>Imported %d autoload-dev %s.</info>', count($autoload_dev), count($autoload_dev) === 1 ? 'namespace' : 'namespaces'));
-  }
-  $output->writeln(array_keys($autoload_dev), OutputInterface::VERBOSITY_VERBOSE);
 }
 
-if (!$bootstrap->cacheExists()) {
+// When we flush, we scan for autoload-dev namespaces.
+if ($build_cache) {
+  $extra_psr4['AKlump\\Drupal\\PHPUnit\\Integration\\'] = [__DIR__ . '/src/'];
+  $autoload_dev = (new AutoloadDev($phpunit_configuration, $drupal_root))
+                    ->getAutoloadDev()['psr-4'] ?? [];
+  $extra_psr4 += $autoload_dev;
+  $bootstrap = new BootstrapCache($install_path, $extra_psr4);
+  $output->writeln(sprintf('<info>Imported %d autoload-dev %s.</info>', count($autoload_dev), count($autoload_dev) === 1 ? 'namespace' : 'namespaces'));
+  $output->writeln(array_keys($autoload_dev), OutputInterface::VERBOSITY_VERBOSE);
   $output->writeln('<info>Building cache; this takes a moment...</info>');
 }
 
