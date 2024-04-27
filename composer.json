@@ -21,13 +21,8 @@
     "php": ">=7.4",
     "phpunit/phpunit": "^9",
     "ext-json": "*",
-    "ext-simplexml": "*"
+    "ext-simplexml": "*",
+    "symfony/console": "*"
   },
-  "license": "GPL-2.0-or-later",
-  "scripts": {
-    "post-package-install": [
-      "cp vendor/aklump/drupal-phpunit-integration/init/phpunit.xml.dist phpunit.xml",
-      "mkdir -p ../pin && cp vendor/aklump/drupal-phpunit-integration/init/run_integration_tests.sh ../pin/"
-    ]
-  }
+  "license": "GPL-2.0-or-later"
 }

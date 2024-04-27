@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - None
 
+## [0.0.18] - 2024-04-27
+
+### Changed
+
+- autoload-dev is now only scanned during --flush
+
+### Fixed
+
+- An issue with some autoload-dev paths not being found.
+
 ## [0.0.15] - 2024-02-14
 
 ### Changed
