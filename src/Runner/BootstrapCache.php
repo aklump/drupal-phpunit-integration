@@ -27,7 +27,7 @@ final class BootstrapCache {
    *   Path to the directory to use for caching.
    */
   public function __construct(string $cache_dir, array $extra_autoload_psr4 = []) {
-    $this->cachePath = $cache_dir . '/.bootstrap.cache.json';
+    $this->cachePath = $cache_dir . '/.bootstrap.cache';
     $this->addPsr4 = $extra_autoload_psr4;
   }
 
