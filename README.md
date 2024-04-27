@@ -7,7 +7,7 @@
 ```shell
 mkdir -p tests_integration/src
 cd tests_integration
-echo "vendor/\n*.cache\n" > .gitignore
+echo "/vendor/\n*/.cache\n/reports/\n" > .gitignore
 echo '{"autoload":{"psr-4":{"\\\\AKlump\\\\Drupal\\\\PHPUnit\\\\Integration\\\\":"src"}},"repositories":[{"type":"github","url":"https://github.com/aklump/drupal-phpunit-integration"}]}' > composer.json
 composer require aklump/drupal-phpunit-integration:^0
 ```
