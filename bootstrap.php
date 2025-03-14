@@ -17,33 +17,42 @@
  *
  */
 
+use AKlump\Drupal\PHPUnit\Integration\Helper\GetEnv;
 use AKlump\Drupal\PHPUnit\Integration\Runner\AutoloadDev;
 use AKlump\Drupal\PHPUnit\Integration\Runner\BootstrapCache;
 use Symfony\Component\Console\Output\OutputInterface;
 
-require_once $_ENV['TESTS_ROOT'] . '/vendor/autoload.php';
+// It's possible autoloading has not happened yet, i.e., flushing.
+if (!class_exists('AKlump\Drupal\PHPUnit\Integration\Helper\GetEnv')) {
+  require_once __DIR__ . '/src/Helper/GetEnv.php';
+}
+
+$INSTALL_PATH = (new GetEnv())('INSTALL_PATH');
+if (!isset($INSTALL_PATH)) {
+  throw new RuntimeException("INSTALL_PATH environment variable cannot be empty" . PHP_EOL);
+}
+
+require_once $INSTALL_PATH . '/vendor/autoload.php';
 require_once __DIR__ . '/src/Runner/BootstrapCache.php';
 require_once __DIR__ . '/src/Runner/AutoloadDev.php';
 
 $output = new Symfony\Component\Console\Output\ConsoleOutput();
 
-$drupal_root = $_ENV['DRUPAL_ROOT'] ?? getenv('DRUPAL_ROOT');
-if (!$drupal_root || !file_exists($drupal_root) || !is_dir($drupal_root)) {
-  $output->writeln(sprintf("<error>DRUPAL_ROOT must be a path to an existing Drupal webroot to test.  The value %s is invalid.</error>", $drupal_root));
+$DRUPAL_ROOT = (new GetEnv())('DRUPAL_ROOT');
+if (!$DRUPAL_ROOT || !file_exists($DRUPAL_ROOT) || !is_dir($DRUPAL_ROOT)) {
+  $output->writeln(sprintf("<error>DRUPAL_ROOT must be a path to an existing Drupal webroot.  The value %s is invalid.</error>", $DRUPAL_ROOT));
   exit(1);
 }
 
-/** @var string $install_path The path to tests_integration/ * */
-$install_path = $_ENV['TESTS_ROOT'] ?? getcwd();
-$bootstrap = new BootstrapCache($install_path);
+$bootstrap = new BootstrapCache($INSTALL_PATH);
 $build_cache = in_array('--flush', $GLOBALS['argv']) || !$bootstrap->cacheExists();
 if ($build_cache) {
   $output->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
 }
 
-$phpunit_configuration = "$install_path/phpunit.xml";
+$phpunit_configuration = "$INSTALL_PATH/phpunit.xml";
 if (!file_exists($phpunit_configuration)) {
-  $output->writeln(sprintf("phpunit.xml not found at %s\nDid you set TESTS_ROOT?\n", $phpunit_configuration));
+  $output->writeln(sprintf("Missing configuration: %s", $phpunit_configuration));
   exit(1);
 }
 
@@ -58,13 +67,13 @@ if (in_array('--flush', $GLOBALS['argv'])) {
 // When we flush, we scan for autoload-dev namespaces.
 if ($build_cache) {
   $extra_psr4['AKlump\\Drupal\\PHPUnit\\Integration\\'] = [__DIR__ . '/src/'];
-  $autoload_dev = (new AutoloadDev($phpunit_configuration, $drupal_root))
+  $autoload_dev = (new AutoloadDev($phpunit_configuration, $DRUPAL_ROOT))
                     ->getAutoloadDev()['psr-4'] ?? [];
   $extra_psr4 += $autoload_dev;
-  $bootstrap = new BootstrapCache($install_path, $extra_psr4);
+  $bootstrap = new BootstrapCache($INSTALL_PATH, $extra_psr4);
   $output->writeln(sprintf('<info>Imported %d autoload-dev %s.</info>', count($autoload_dev), count($autoload_dev) === 1 ? 'namespace' : 'namespaces'));
   $output->writeln(array_keys($autoload_dev), OutputInterface::VERBOSITY_VERBOSE);
   $output->writeln('<info>Building cache; this takes a moment...</info>');
 }
 
-$bootstrap->require("$drupal_root/core/tests/bootstrap.php");
+$bootstrap->require("$DRUPAL_ROOT/core/tests/bootstrap.php");
