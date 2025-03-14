@@ -5,6 +5,7 @@ namespace AKlump\Drupal\PHPUnit\Integration\Runner\Extension;
 use AKlump\Drupal\PHPUnit\Integration\Helper\GetEnv;
 use AKlump\Drupal\PHPUnit\Integration\Helper\GetUserHelpForMissingSimpleTestDB;
 use AKlump\Drupal\PHPUnit\Integration\Helper\PutEnv;
+use AKlump\Drupal\PHPUnit\Integration\ThirdParty\GitService;
 use AKlump\Drupal\PHPUnit\Integration\ThirdParty\LandoService;
 use PHPUnit\Runner\BeforeFirstTestHook;
 use RuntimeException;
@@ -39,12 +40,12 @@ final class DynamicConfig implements BeforeFirstTestHook {
    *   The database configuration as an URL string.
    */
   private function getSimpletestDb(): string {
-    $git_branch = exec('cd ' . __DIR__ . ' && git rev-parse --abbrev-ref HEAD 2>/dev/null');
-    $key = 'DATABASE_URL';
     $get_env = new GetEnv();
-    $value = $get_env($key);
-    if ($git_branch) {
-      $branch_key = 'DATABASE_URL__' . strtoupper($git_branch);
+    $value = $get_env('DATABASE_URL');
+    $DRUPAL_ROOT = $get_env('DRUPAL_ROOT');
+    $branch_name = (new GitService($DRUPAL_ROOT))->getBranchName();
+    if ($branch_name) {
+      $branch_key = 'DATABASE_URL__' . strtoupper($branch_name);
       $db_based_value = $get_env($branch_key);
       $value = $db_based_value ?: $value;
     }
