@@ -1,3 +1,8 @@
+<!--
+id: troubleshooting
+tags: ''
+-->
+
 ## Error: Class "Drupal\commons_theme_support\ViewModes" not found
 
 ### Fix

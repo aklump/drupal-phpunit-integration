@@ -1,6 +1,0 @@
-page_order:
-  - readme
-  - changelog
-  - developers
-  - composer_autoload_dev
-  - troubleshooting

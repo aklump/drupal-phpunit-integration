@@ -1,1 +1,19 @@
 title: Book
+uuid: cd0f10da-3492-4622-b736-a20b6c618881
+chapters:
+  -
+    id: general
+    title: General
+    pages:
+      - install
+      - rewrite
+      - troubleshooting
+      - why
+      - changelog
+      - readme
+  -
+    id: dev
+    title: Dev
+    pages:
+      - developers
+      - composer_autoload_dev
