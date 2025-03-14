@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-knowledge-id="cd0f10da-3492-4622-b736-a20b6c618881">
 <head>
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=0.0.20">
-      <link rel="stylesheet" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/dist/style.css?ver=0.0.20">
-      <link rel="stylesheet" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=0.0.20">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=0.0.20">
+      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=0.0.20">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=0.0.20">
     <title>Drupal PHPUnit Integration Testing Framework | Book</title>
 </head>
 <body class="my-5">
@@ -18,7 +18,7 @@
         <nav aria-label="breadcrumb">
   <ol class="breadcrumb mb-0">
         <li class="breadcrumb-item">
-      <a class="fw-bold" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/index.html">Book</a>
+      <a class="fw-bold" href="../../index.html">Book</a>
     </li>
     <li class="breadcrumb-item">
       <a class="fw-bold" href="#" data-bs-toggle="offcanvas"
@@ -26,14 +26,14 @@
          aria-controls="table-of-contents">TOC</a>
     </li>
     <li class="breadcrumb-item">
-      <a href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/pages/general/readme.html">General</a></li>
+      <a href="install.html">General</a></li>
   </ol>
 </nav>
 
       </div>
       <div class="header__tags me-3">  </div>
-      <div class="header__page-numbers flex-shrink-1">1
-        / 4</div>
+      <div class="header__page-numbers flex-shrink-1">6
+        / 8</div>
     </div>
   </div>
 </header>
@@ -52,7 +52,7 @@ composer require aklump/drupal-phpunit-integration:^0
 </code></pre>
 <p>This will create the file for running your tests:</p>
 <pre><code class="shell">mkdir -p ../bin
-cp vendor/aklump/drupal-phpunit-integration/init/run_integration_tests.sh ../bin/
+cp vendor/aklump/drupal-phpunit-integration/init/run_phpunit_tests.sh ../bin/
 </code></pre>
 <p>This will create <em>phpunit.xml</em> for configuring testing.</p>
 <pre><code class="shell">cp vendor/aklump/drupal-phpunit-integration/init/phpunit.xml.dist phpunit.xml
@@ -98,11 +98,11 @@ class FooTest extends \PHPUnit\Framework\TestCase {
 <h2>Run Your Tests</h2>
 <ol>
 <li><code>cd</code> into the directory above web root.</li>
-<li>Run tests with <code>bin/run_integration_tests.sh</code></li>
+<li>Run tests with <code>bin/run_phpunit_tests.sh</code></li>
 </ol>
 <p>The first time the tests are run, a cache is built that speeds up subsequent
 runs. To flush these caches, add the <code>--flush</code> parameter,
-e.g. <code>bin/run_integration_tests.sh --flush</code>.</p>
+e.g. <code>bin/run_phpunit_tests.sh --flush</code>.</p>
 <h2>Built-in Test Support Classes</h2>
 <p>Have a look in the following directories:</p>
 <ul>
@@ -127,7 +127,7 @@ e.g. <code>bin/run_integration_tests.sh --flush</code>.</p>
             ├── FooTest.php
             └── phpunit.xml
 </code></pre>
-<p>Given the above module file structure, you can see two directories in <em>tests</em>.  <em>tests/Unit/FooTest.php</em> can be run using _alpha/bin/run_unit<em>tests.sh</em> and has no Drupal dependencies. Therefore it's straight-up PHPUnit stuff. On the other hand,  <em>tests/Integration/FooTest.php</em> cannot be run in the same manner as it has Drupal class dependencies, hence it "integrates" with Drupal. For that you must use _tests_integration/bin/run_integration<em>tests.sh</em>.</p>
+<p>Given the above module file structure, you can see two directories in <em>tests</em>.  <em>tests/Unit/FooTest.php</em> can be run using _alpha/bin/run_unit<em>tests.sh</em> and has no Drupal dependencies. Therefore it's straight-up PHPUnit stuff. On the other hand,  <em>tests/Integration/FooTest.php</em> cannot be run in the same manner as it has Drupal class dependencies, hence it "integrates" with Drupal. For that you must use _tests_integration/bin/run_phpunit<em>tests.sh</em>.</p>
 <p><strong>Use <code>namespace Drupal\Tests\alpha\Unit;</code> for unit test classes.</strong></p>
 <p>Unit tests are only mentioned here to distinguish the difference. This package concerns itself with Integration tests, with one caveat: it is convenient to add the <em>Unit</em> directory to  _tests<em>integration/phpunit.xml</em> so that Unit tests are run at the same time as the Integration tests. This is a good idea and encouraged. In our example, it will look like this.</p>
 <pre><code class="xml">&lt;testsuites&gt;
@@ -148,9 +148,9 @@ composer update
 </code></pre>
 <p><strong>This will only update the <em>vendor/</em> directory so your changes and files
 in _tests<em>integration</em> are not affected.</strong></p>
-<p>You may want to diff _run_integration<em>tests.sh</em> and <em>phpunit.xml</em> from time to time and cherry pick as necessary, however, <em>CHANGELOG.md</em> should make note of any changes to these files.</p>
+<p>You may want to diff _run_phpunit<em>tests.sh</em> and <em>phpunit.xml</em> from time to time and cherry pick as necessary, however, <em>CHANGELOG.md</em> should make note of any changes to these files.</p>
 <pre><code class="php">cd tests_integration
-diff vendor/aklump/drupal-phpunit-integration/init/run_integration_tests.sh ../bin/run_integration_tests.sh
+diff vendor/aklump/drupal-phpunit-integration/init/run_phpunit_tests.sh ../bin/run_phpunit_tests.sh
 diff vendor/aklump/drupal-phpunit-integration/init/phpunit.xml.dist phpunit.xml
 </code></pre>
     </article>
@@ -159,23 +159,24 @@ diff vendor/aklump/drupal-phpunit-integration/init/phpunit.xml.dist phpunit.xml
 
   <footer class="footer d-flex justify-content-center">
     <div class="flex-column justify-content-center">
-                  Version:
-          <strong>0.0.20</strong>
-          &bull;
-                Last Update: <strong>4/27/2024</strong>
-    </div>
+              Version:
+        <strong>0.0.20</strong>
+        &bull;
+                    Last Update: <strong>3/14/2025</strong>
+          </div>
   </footer>
 
 
 <nav class="nav d-flex justify-content-center align-items-center
   fixed-bottom">
   <div class="btn-group flex-fill">
-              <a href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/pages/general/readme.html" class="btn nav__prev-chapter btn-secondary"><i class="bi
-      bi-caret-left-fill"></i> Drupal PHPUnit Integration Testing Framework</a>
+              <a href="install.html" class="btn nav__prev-chapter btn-secondary"><i class="bi
+      bi-caret-left-fill"></i> Install</a>
   
     
-              <span class="btn nav__prev-page js-nav__prev-page
-    btn-primary"></span>
+              <a href="changelog.html" class="btn nav__prev-page js-nav__prev-page
+    btn-primary"><i class="bi
+      bi-caret-left-fill"></i></a>
   
     
     <a class="nav__toc btn btn-light" href="#"
@@ -184,8 +185,8 @@ diff vendor/aklump/drupal-phpunit-integration/init/phpunit.xml.dist phpunit.xml
        aria-controls="table-of-contents"><i class="bi
            bi-list-ol"></i></a>
     
-              <a href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/pages/general/changelog.html" class="btn nav__next-page js-nav__next-page
-    btn-primary"><i class="bi bi-file-earmark"></i> Changelog <i class="bi
+              <a href="../dev/developers.html" class="btn nav__next-page js-nav__next-page
+    btn-primary"><i class="bi bi-file-earmark"></i> Developer Notes <i class="bi
        bi-caret-right-fill"></i></a>
   
     
@@ -213,32 +214,60 @@ diff vendor/aklump/drupal-phpunit-integration/init/phpunit.xml.dist phpunit.xml
       <div class="js-search-results d-none">
         <h2 class="h4 mt-4">Matched Pages</h2>
         <ol class="list-unstyled">
-                                              <li data-page="readme" value="1">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/pages/general/readme.html">Drupal PHPUnit Integration Testing Framework<span
+                                              <li data-page="install" value="1">
+      <a class="js-page-link" href="install.html">Install<span
               class="js-search-score
               badge
-              bg-info rounded-pill badge-sm"></span></a>&nbsp;[General]
+              bg-info rounded-pill badge-sm"></span></a>
     </li>
   
-                                    <li data-page="changelog" value="2">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/pages/general/changelog.html">Changelog<span
+                                    <li data-page="rewrite" value="2">
+      <a class="js-page-link" href="rewrite.html">s-examples--3<span
               class="js-search-score
               badge
-              bg-info rounded-pill badge-sm"></span></a>&nbsp;[General]
+              bg-info rounded-pill badge-sm"></span></a>
     </li>
   
-                                                          <li data-page="developers" value="3">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/pages/dev/developers.html">Developer Notes<span
+                                    <li data-page="troubleshooting" value="3">
+      <a class="js-page-link" href="troubleshooting.html">Error: Class "Drupal\commons_theme_support\ViewModes" not found<span
               class="js-search-score
               badge
-              bg-info rounded-pill badge-sm"></span></a>&nbsp;[Dev]
+              bg-info rounded-pill badge-sm"></span></a>
     </li>
   
-                                    <li data-page="composer_autoload_dev" value="4">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/pages/dev/composer_autoload_dev.html">Composer Autoload Dev<span
+                                    <li data-page="why" value="4">
+      <a class="js-page-link" href="why.html">Why do you Need This?<span
               class="js-search-score
               badge
-              bg-info rounded-pill badge-sm"></span></a>&nbsp;[Dev]
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                    <li data-page="changelog" value="5">
+      <a class="js-page-link" href="changelog.html">Changelog<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                    <li data-page="readme" value="6">
+      <a class="js-page-link" href="readme.html">Drupal PHPUnit Integration Testing Framework<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                                          <li data-page="developers" value="7">
+      <a class="js-page-link" href="../dev/developers.html">Developer Notes<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                    <li data-page="composer_autoload_dev" value="8">
+      <a class="js-page-link" href="../dev/composer_autoload_dev.html">Composer Autoload Dev<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
     </li>
   
                               </ol>
@@ -247,23 +276,39 @@ diff vendor/aklump/drupal-phpunit-integration/init/phpunit.xml.dist phpunit.xml
     <div class="js-chapter-list">
               <h2 class="h4 mt-4">General</h2>
         <ol>
-                                <li data-page="readme" value="1">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/pages/general/readme.html">Drupal PHPUnit Integration Testing Framework</a>&nbsp;[General]
+                                <li data-page="install" value="1">
+      <a class="js-page-link" href="install.html">Install</a>
     </li>
   
-                                <li data-page="changelog" value="2">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/pages/general/changelog.html">Changelog</a>&nbsp;[General]
+                                <li data-page="rewrite" value="2">
+      <a class="js-page-link" href="rewrite.html">s-examples--3</a>
+    </li>
+  
+                                <li data-page="troubleshooting" value="3">
+      <a class="js-page-link" href="troubleshooting.html">Error: Class "Drupal\commons_theme_support\ViewModes" not found</a>
+    </li>
+  
+                                <li data-page="why" value="4">
+      <a class="js-page-link" href="why.html">Why do you Need This?</a>
+    </li>
+  
+                                <li data-page="changelog" value="5">
+      <a class="js-page-link" href="changelog.html">Changelog</a>
+    </li>
+  
+                                <li data-page="readme" value="6">
+      <a class="js-page-link" href="readme.html">Drupal PHPUnit Integration Testing Framework</a>
     </li>
   
                   </ol>
               <h2 class="h4 mt-4">Dev</h2>
         <ol>
-                                <li data-page="developers" value="3">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/pages/dev/developers.html">Developer Notes</a>&nbsp;[Dev]
+                                <li data-page="developers" value="7">
+      <a class="js-page-link" href="../dev/developers.html">Developer Notes</a>
     </li>
   
-                                <li data-page="composer_autoload_dev" value="4">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/pages/dev/composer_autoload_dev.html">Composer Autoload Dev</a>&nbsp;[Dev]
+                                <li data-page="composer_autoload_dev" value="8">
+      <a class="js-page-link" href="../dev/composer_autoload_dev.html">Composer Autoload Dev</a>
     </li>
   
                   </ol>
@@ -285,22 +330,30 @@ diff vendor/aklump/drupal-phpunit-integration/init/phpunit.xml.dist phpunit.xml
                 
         <ul class="list-group list-group-flush">
                                     <a class="list-group-item list-group-item-action"
-                 data-tags="[]" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/pages/general/readme.html">Drupal PHPUnit Integration Testing Framework</a>
+                 data-tags="[]" href="install.html">Install</a>
                                                 <a class="list-group-item list-group-item-action"
-                 data-tags="[]" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/pages/general/changelog.html">Changelog</a>
+                 data-tags="[]" href="rewrite.html">s-examples--3</a>
                                                 <a class="list-group-item list-group-item-action"
-                 data-tags="[]" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/pages/dev/developers.html">Developer Notes</a>
+                 data-tags="[]" href="troubleshooting.html">Error: Class &quot;Drupal\commons_theme_support\ViewModes&quot; not found</a>
                                                 <a class="list-group-item list-group-item-action"
-                 data-tags="[]" href="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/pages/dev/composer_autoload_dev.html">Composer Autoload Dev</a>
+                 data-tags="[]" href="why.html">Why do you Need This?</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="changelog.html">Changelog</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="readme.html">Drupal PHPUnit Integration Testing Framework</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="../dev/developers.html">Developer Notes</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="../dev/composer_autoload_dev.html">Composer Autoload Dev</a>
                               </ul>
       </div>
     </div>
   </div>
 </div>
 
-  <script src="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=0.0.20"></script>
-  <script src="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/dist/lunr.js?ver=0.0.20"></script>
-  <script src="/Users/aklump/Code/Packages/d8/phpunit_integration/docs/dist/knowledge.min.js?ver=0.0.20"></script>
+  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=0.0.20"></script>
+  <script src="../../dist/lunr.js?ver=0.0.20"></script>
+  <script src="../../dist/knowledge.min.js?ver=0.0.20"></script>
 
 </body>
 </html>

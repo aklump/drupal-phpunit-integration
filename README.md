@@ -16,7 +16,7 @@ This will create the file for running your tests:
 
 ```shell
 mkdir -p ../bin
-cp vendor/aklump/drupal-phpunit-integration/init/run_integration_tests.sh ../bin/
+cp vendor/aklump/drupal-phpunit-integration/init/run_phpunit_tests.sh ../bin/
 ```
 
 This will create _phpunit.xml_ for configuring testing.
@@ -81,11 +81,11 @@ Now open _tests_integration/phpunit.xml_ and add one or more integration test di
 ## Run Your Tests
 
 1. `cd` into the directory above web root.
-2. Run tests with `bin/run_integration_tests.sh`
+2. Run tests with `bin/run_phpunit_tests.sh`
 
 The first time the tests are run, a cache is built that speeds up subsequent
 runs. To flush these caches, add the `--flush` parameter,
-e.g. `bin/run_integration_tests.sh --flush`.
+e.g. `bin/run_phpunit_tests.sh --flush`.
 
 ## Built-in Test Support Classes
 
@@ -115,7 +115,7 @@ web/modules/custom
             └── phpunit.xml
 ```
 
-Given the above module file structure, you can see two directories in _tests_.  _tests/Unit/FooTest.php_ can be run using _alpha/bin/run_unit_tests.sh_ and has no Drupal dependencies. Therefore it's straight-up PHPUnit stuff. On the other hand,  _tests/Integration/FooTest.php_ cannot be run in the same manner as it has Drupal class dependencies, hence it "integrates" with Drupal. For that you must use _tests_integration/bin/run_integration_tests.sh_.
+Given the above module file structure, you can see two directories in _tests_.  _tests/Unit/FooTest.php_ can be run using _alpha/bin/run_unit_tests.sh_ and has no Drupal dependencies. Therefore it's straight-up PHPUnit stuff. On the other hand,  _tests/Integration/FooTest.php_ cannot be run in the same manner as it has Drupal class dependencies, hence it "integrates" with Drupal. For that you must use _tests_integration/bin/run_phpunit_tests.sh_.
 
 **Use `namespace Drupal\Tests\alpha\Unit;` for unit test classes.**
 
@@ -148,10 +148,10 @@ composer update
 **This will only update the _vendor/_ directory so your changes and files
 in _tests_integration_ are not affected.**
 
-You may want to diff _run_integration_tests.sh_ and _phpunit.xml_ from time to time and cherry pick as necessary, however, _CHANGELOG.md_ should make note of any changes to these files.
+You may want to diff _run_phpunit_tests.sh_ and _phpunit.xml_ from time to time and cherry pick as necessary, however, _CHANGELOG.md_ should make note of any changes to these files.
 
 ```php
 cd tests_integration
-diff vendor/aklump/drupal-phpunit-integration/init/run_integration_tests.sh ../bin/run_integration_tests.sh
+diff vendor/aklump/drupal-phpunit-integration/init/run_phpunit_tests.sh ../bin/run_phpunit_tests.sh
 diff vendor/aklump/drupal-phpunit-integration/init/phpunit.xml.dist phpunit.xml
 ```
