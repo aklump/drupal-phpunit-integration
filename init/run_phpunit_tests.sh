@@ -3,7 +3,7 @@ s="${BASH_SOURCE[0]}";[[ "$s" ]] || s="${(%):-%N}";while [ -h "$s" ];do d="$(cd 
 
 # ========= Begin Configutation =========
 DRUPAL_ROOT="../web/"
-INSTALL_PATH="../tests_integration/"
+INSTALL_PATH="../tests_phpunit/"
 # ========= End Configuration =========
 
 # ========= Validation =========
