@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - None
 
+## [0.0.21] - 2025-03-27
+
+### Added
+
+- Better handling of environment variables
+
+### Changed
+
+- Language change "integration_tests" to "phpunit_tests" in several places
+
 ## [0.0.18] - 2024-04-27
 
 ### Changed
