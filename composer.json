@@ -19,7 +19,7 @@
   },
   "require": {
     "php": ">=7.4",
-    "phpunit/phpunit": "^9 || ^10",
+    "phpunit/phpunit": "^9",
     "ext-json": "*",
     "ext-simplexml": "*",
     "symfony/console": "*"

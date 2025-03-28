@@ -1,6 +1,6 @@
 ## Critical
 
-- must work with phpunit 10
+- must work with phpunit 10; current something breaks in seao anyway
 
 ## Normal
 
