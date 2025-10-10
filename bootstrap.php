@@ -50,7 +50,8 @@ if ($build_cache) {
   $output->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
 }
 
-$phpunit_configuration = "$INSTALL_PATH/phpunit.xml";
+$options = getopt("c:");
+$phpunit_configuration = $options['c'] ?? "$INSTALL_PATH/phpunit.xml";
 if (!file_exists($phpunit_configuration)) {
   $output->writeln(sprintf("Missing configuration: %s", $phpunit_configuration));
   exit(1);
