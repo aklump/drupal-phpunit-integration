@@ -4,9 +4,9 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=0.0.22">
-      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=0.0.22">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=0.0.22">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=0.0.23">
+      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=0.0.23">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=0.0.23">
     <title>Developer Notes | Book</title>
 </head>
 <body class="my-5">
@@ -42,9 +42,12 @@
   <div class="row mb-5 pt-5">
     <article class="col">
       <h1 class="mb-4 text-primary">Developer Notes</h1>
-      <h3>How to Run Self Tests</h3>
-<pre><code class="shell">export DRUPAL_ROOT=/path/to/drupal/web
-vendor/bin/phpunit -c vendor/aklump/drupal-phpunit-integration/self.xml
+      <h3>How to Run Package Self Tests</h3>
+<p>In order to self-test this package you must be able to point to a Drupal codebase. To do that you will set these first two variables. The tests will use these variables to access the Drupal classes and bootstrapping necessary.</p>
+<p>The PHPUnit configuration file <em>self.xml</em>, is located in the root of the package.</p>
+<pre><code class="shell">export DRUPAL_ROOT=/Users/aklump/Code/Projects/MyDrupalProject/web
+export INSTALL_PATH=/Users/aklump/Code/Projects/MyDrupalProject/
+vendor/bin/phpunit -c /Users/aklump/Code/Packages/php/drupal-phpunit-integration/app/self.xml
 </code></pre>
     </article>
   </div>
@@ -53,9 +56,9 @@ vendor/bin/phpunit -c vendor/aklump/drupal-phpunit-integration/self.xml
   <footer class="footer d-flex justify-content-center">
     <div class="flex-column justify-content-center">
               Version:
-        <strong>0.0.22</strong>
+        <strong>0.0.23</strong>
         &bull;
-                    Last Update: <strong>3/27/2025</strong>
+                    Last Update: <strong>10/10/2025</strong>
           </div>
   </footer>
 
@@ -244,9 +247,9 @@ vendor/bin/phpunit -c vendor/aklump/drupal-phpunit-integration/self.xml
   </div>
 </div>
 
-  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=0.0.22"></script>
-  <script src="../../dist/lunr.js?ver=0.0.22"></script>
-  <script src="../../dist/knowledge.min.js?ver=0.0.22"></script>
+  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=0.0.23"></script>
+  <script src="../../dist/lunr.js?ver=0.0.23"></script>
+  <script src="../../dist/knowledge.min.js?ver=0.0.23"></script>
 
 </body>
 </html>
