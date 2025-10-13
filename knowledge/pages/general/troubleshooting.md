@@ -3,7 +3,7 @@ id: troubleshooting
 tags: ''
 -->
 
-## Error: Class "Drupal\commons_theme_support\ViewModes" not found
+## Error: Class "Drupal\my_module\ViewModes" not found
 
 ### Fix
 
@@ -28,3 +28,15 @@ Have you installed _drupal/core-dev_ in your Drupal project?
 ### Fix
 
 1. `composer require --dev drupal/core-dev` in the Drupal root.
+
+## PHP Fatal error: Declaration of Symfony\Component\DependencyInjection\ContainerInterface::has($id) must be compatible with Psr\Container\ContainerInterface::has(string $id): bool
+
+### Fix
+
+This is probably happening on an older version of Drupal, where the container version is mismatched.
+Change the installed version of psr/container to match that of the Drupal installation.
+
+```php
+cd tests_php_unit
+composer require psr/container:^1.1
+```
