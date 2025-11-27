@@ -14,7 +14,9 @@ The following code will:
 * Copy phpunit.xml from Drupal core, replacing some values
 * Create a test running in bin/run_phpunit_tests.sh
 
-@see bin/install.sh
+```shell
+curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
+```
 
 ## Test Class Namespace & File Structure
 

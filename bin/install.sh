@@ -16,7 +16,7 @@ COMPOSER_CONFIG='{
 }'
 
 # Verify Drupal installation
-[ ! -d "$DRUPAL_PATH" ] && echo "Error: Drupal not found at $DRUPAL_PATH" && exit 1
+[ ! -f "$DRUPAL_PATH" ] && echo "Error: Drupal not found at $DRUPAL_PATH" && exit 1
 
 # Setup test environment
 export INSTALL_DIR="$TEST_DIR" && \
