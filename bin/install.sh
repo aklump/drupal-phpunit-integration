@@ -16,8 +16,14 @@ COMPOSER_CONFIG='{
   }]
 }'
 
+# Verify not already installed
+[ -e "$TEST_DIR" ] && echo "$TEST_DIR is already installed" && exit 1
+
+# Check if directory is writable
+[ ! -w "$(dirname "$TEST_DIR")" ] && error_exit "Parent directory not writable"
+
 # Verify Drupal installation
-[ ! -f "$DRUPAL_PATH" ] && echo "Error: Drupal not found at $DRUPAL_PATH" && exit 1
+[ ! -e "$DRUPAL_PATH" ] && echo "Error: Drupal not found at $DRUPAL_PATH" && exit 1
 
 # Setup test environment
 export INSTALL_DIR="$TEST_DIR" && \
