@@ -7,4 +7,4 @@ push_master: true
 push_tags: true
 remote: origin
 version_file: .web_package/config.yml
-version: 9.0.1
+version: 10.0.0
