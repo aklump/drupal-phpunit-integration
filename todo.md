@@ -1,8 +1,12 @@
-## Critical
+## Blockers
 
-- must work with phpunit 10; current something breaks in seao anyway
+## Critical
 
 ## Normal
 
-- add "Why Use?" to the README.  Contrast with community docs.
-- need a way to select the phpunit version, it defaults to 9 which is now old
+- add "Why Use?" to the README. Contrast with community docs.
+- Make the install.sh pick the correct version based on what phpunit is installed in the root.
+
+## Backlog
+
+## Notes
