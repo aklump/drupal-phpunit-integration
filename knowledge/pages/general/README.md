@@ -10,54 +10,15 @@ tags: ''
 The following code will:
 
 * Create a subdirectory
-* Install this package using Composer
-* Copy phpunit.xml from Drupal core, replacing some values
-* Create a test running in bin/run_phpunit_tests.sh
+* Install this package using Composer into subdirectory
+* Copy phpunit.xml from Drupal core into subdirectory, replacing some values
+* Create a test runner at bin/run_phpunit_tests.sh
 
 ```shell
-export VERSION=@dev;curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
+export VERSION=^0;curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
 ```
 
-## Test Class Namespace & File Structure
-
-**Before continuing please read the section _Difference Between Integration Tests and Unit Tests_ so you create the tests appropriately.**
-
-Create your first integration test class:
-
-```
-web/modules/custom
-└── alpha
-    └── tests
-        └── Integration
-            └── FooTest.php
-```
-
-_FooTest.php_
-
-```php
-namespace Drupal\Tests\alpha\Integration;
-
-class FooTest extends \PHPUnit\Framework\TestCase {
-```
-
-Ensure your module's _web/modules/custom/composer.json_ has the proper autoloading configuration:
-
-```json
-{
-  "autoload": {
-    "psr-4": {
-      "Drupal\\alpha\\": "src"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Drupal\\Tests\\alpha\\": "./tests/"
-    }
-  }
-}
-```
-
-## Config File
+## Configuration
 
 Now open _tests_phpunit/phpunit.xml_ and add one or more integration test directories:
 
@@ -126,6 +87,47 @@ Unit tests are only mentioned here to distinguish the difference. This package c
     </testsuite>
 </testsuites>
 ```
+
+## Test Class Namespace & File Structure
+
+**Before continuing please read the section _Difference Between Integration Tests and Unit Tests_ so you create the tests appropriately.**
+
+Create your first integration test class:
+
+```
+web/modules/custom
+└── alpha
+    └── tests
+        └── Integration
+            └── FooTest.php
+```
+
+_FooTest.php_
+
+```php
+namespace Drupal\Tests\alpha\Integration;
+
+class FooTest extends \PHPUnit\Framework\TestCase {
+```
+
+Ensure your module's _web/modules/custom/composer.json_ has the proper autoloading configuration:
+
+```json
+{
+  "autoload": {
+    "psr-4": {
+      "Drupal\\alpha\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Drupal\\Tests\\alpha\\": "./tests/"
+    }
+  }
+}
+```
+
+
 
 ## What About `tests_phpunit/composer.lock`?
 

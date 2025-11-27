@@ -46,41 +46,13 @@
 <p>The following code will:</p>
 <ul>
 <li>Create a subdirectory</li>
-<li>Install this package using Composer</li>
-<li>Copy phpunit.xml from Drupal core, replacing some values</li>
-<li>Create a test running in bin/run_phpunit_tests.sh</li>
+<li>Install this package using Composer into subdirectory</li>
+<li>Copy phpunit.xml from Drupal core into subdirectory, replacing some values</li>
+<li>Create a test runner at bin/run_phpunit_tests.sh</li>
 </ul>
-<pre><code class="shell">export VERSION=@dev;curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
+<pre><code class="shell">export VERSION=^0;curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
 </code></pre>
-<h2>Test Class Namespace &amp; File Structure</h2>
-<p><strong>Before continuing please read the section <em>Difference Between Integration Tests and Unit Tests</em> so you create the tests appropriately.</strong></p>
-<p>Create your first integration test class:</p>
-<pre><code>web/modules/custom
-└── alpha
-    └── tests
-        └── Integration
-            └── FooTest.php
-</code></pre>
-<p><em>FooTest.php</em></p>
-<pre><code class="php">namespace Drupal\Tests\alpha\Integration;
-
-class FooTest extends \PHPUnit\Framework\TestCase {
-</code></pre>
-<p>Ensure your module's <em>web/modules/custom/composer.json</em> has the proper autoloading configuration:</p>
-<pre><code class="json">{
-  "autoload": {
-    "psr-4": {
-      "Drupal\\alpha\\": "src"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Drupal\\Tests\\alpha\\": "./tests/"
-    }
-  }
-}
-</code></pre>
-<h2>Config File</h2>
+<h2>Configuration</h2>
 <p>Now open _tests<em>phpunit/phpunit.xml</em> and add one or more integration test directories:</p>
 <pre><code class="xml">
 &lt;testsuites&gt;
@@ -135,6 +107,34 @@ e.g. <code>bin/run_phpunit_tests.sh --flush</code>.</p>
         &lt;directory&gt;../web/modules/custom/alpha/tests/Integration/&lt;/directory&gt;
     &lt;/testsuite&gt;
 &lt;/testsuites&gt;
+</code></pre>
+<h2>Test Class Namespace &amp; File Structure</h2>
+<p><strong>Before continuing please read the section <em>Difference Between Integration Tests and Unit Tests</em> so you create the tests appropriately.</strong></p>
+<p>Create your first integration test class:</p>
+<pre><code>web/modules/custom
+└── alpha
+    └── tests
+        └── Integration
+            └── FooTest.php
+</code></pre>
+<p><em>FooTest.php</em></p>
+<pre><code class="php">namespace Drupal\Tests\alpha\Integration;
+
+class FooTest extends \PHPUnit\Framework\TestCase {
+</code></pre>
+<p>Ensure your module's <em>web/modules/custom/composer.json</em> has the proper autoloading configuration:</p>
+<pre><code class="json">{
+  "autoload": {
+    "psr-4": {
+      "Drupal\\alpha\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Drupal\\Tests\\alpha\\": "./tests/"
+    }
+  }
+}
 </code></pre>
 <h2>What About <code>tests_phpunit/composer.lock</code>?</h2>
 <p>It's up to you, but it seems like a good idea to source code commit this file as it will provide more stability to your app for tests passing if you have to reinstall dependencies.</p>
