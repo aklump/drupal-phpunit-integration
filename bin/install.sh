@@ -26,4 +26,3 @@ echo "/vendor/\n*/.cache\n/.phpunit.cache\n/reports/\n" > "$INSTALL_DIR/.gitigno
 echo "$COMPOSER_CONFIG" > "$INSTALL_DIR/composer.json" && \
 (cd "$INSTALL_DIR" && composer require aklump/drupal-phpunit-integration:$VERSION) && \
 "$TEST_DIR/vendor/aklump/drupal-phpunit-integration/bin/install.php" && \
-bin/run_phpunit_tests.sh --flush

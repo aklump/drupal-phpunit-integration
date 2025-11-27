@@ -59,7 +59,6 @@
 &lt;testsuites&gt;
     &lt;testsuite name="integration"&gt;
         &lt;directory&gt;../web/modules/custom/alpha/tests/Integration/&lt;/directory&gt;
-        &lt;directory&gt;../web/modules/custom/bravo/tests/Integration/&lt;/directory&gt;
         &lt;directory&gt;../web/modules/custom/charlie/tests/Integration/&lt;/directory&gt;
     &lt;/testsuite&gt;
 &lt;/testsuites&gt;
@@ -67,7 +66,8 @@
 <h2>Run Your Tests</h2>
 <ol>
 <li><code>cd</code> into the directory above web root.</li>
-<li>Run tests with <code>bin/run_phpunit_tests.sh</code></li>
+<li><code>chmod u+x bin/run_phpunit_tests.sh</code></li>
+<li>Run tests with <code>bin/run_phpunit_tests.sh --flush</code> (use <code>--flush</code> just this first time, or when you need to rebuild the autoloading for dev).</li>
 </ol>
 <p>The first time the tests are run, a cache is built that speeds up subsequent
 runs. To flush these caches, add the <code>--flush</code> parameter,

@@ -29,7 +29,6 @@ Now open _tests_phpunit/phpunit.xml_ and add one or more integration test direct
 <testsuites>
     <testsuite name="integration">
         <directory>../web/modules/custom/alpha/tests/Integration/</directory>
-        <directory>../web/modules/custom/bravo/tests/Integration/</directory>
         <directory>../web/modules/custom/charlie/tests/Integration/</directory>
     </testsuite>
 </testsuites>
@@ -38,7 +37,8 @@ Now open _tests_phpunit/phpunit.xml_ and add one or more integration test direct
 ## Run Your Tests
 
 1. `cd` into the directory above web root.
-2. Run tests with `bin/run_phpunit_tests.sh`
+2. `chmod u+x bin/run_phpunit_tests.sh`
+3. Run tests with `bin/run_phpunit_tests.sh --flush` (use `--flush` just this first time, or when you need to rebuild the autoloading for dev).
 
 The first time the tests are run, a cache is built that speeds up subsequent
 runs. To flush these caches, add the `--flush` parameter,
