@@ -7,19 +7,23 @@ use AKlump\Drupal\PHPUnit\Integration\Helper\GetUserHelpForMissingSimpleTestDB;
 use AKlump\Drupal\PHPUnit\Integration\Helper\PutEnv;
 use AKlump\Drupal\PHPUnit\Integration\ThirdParty\GitService;
 use AKlump\Drupal\PHPUnit\Integration\ThirdParty\LandoService;
-use PHPUnit\Runner\BeforeFirstTestHook;
+use PHPUnit\Event\TestRunner\ExecutionStarted;
+use PHPUnit\Event\TestRunner\ExecutionStartedSubscriber;
+use PHPUnit\Runner\Extension\Extension;
+use PHPUnit\Runner\Extension\Facade;
+use PHPUnit\Runner\Extension\ParameterCollection;
+use PHPUnit\TextUI\Configuration\Configuration;
 use RuntimeException;
 
 /**
  * This class is included in the phpunit.xml file as an extension.
  */
-final class DynamicConfig implements BeforeFirstTestHook {
+final class DynamicConfig implements Extension {
 
   /** @var string */
   const OUTPUT_DIRECTORY_NAME = 'test_output';
 
-  public function executeBeforeFirstTest(): void {
-
+  public function bootstrap(Configuration $configuration, Facade $facade, ParameterCollection $parameters): void {
     // Setup some environment variables that will be used by Drupal.  These
     // might normally be hard-coded in phpunit.xml, but we will make them
     // dynamic and set them here to make configuration easier.
