@@ -4,7 +4,7 @@ s="${BASH_SOURCE[0]}";[[ "$s" ]] || s="${(%):-%N}";while [ -h "$s" ];do d="$(cd 
 # ========= Begin Configutation =========
 DRUPAL_ROOT="../web/"
 INSTALL_PATH="../tests_phpunit/"
-VENDOR="../vendor/"
+VENDOR_PATH="../vendor/"
 # ========= End Configuration =========
 
 # ========= Validation =========
@@ -15,9 +15,9 @@ DRUPAL_ROOT="$(cd "$__DIR__/$DRUPAL_ROOT" && pwd)"
 [[ -z "$INSTALL_PATH" ]] && echo "❌️ \$INSTALL_PATH cannot be empty" && exit 3
 INSTALL_PATH="$(cd "$__DIR__/$INSTALL_PATH" && pwd)"
 cd "$INSTALL_PATH" || exit 2
-[[ -z "$VENDOR" ]] && echo "❌️ \$VENDOR cannot be empty" && exit 4
-[[ ! -d  "$VENDOR" ]] && echo "❌️ \"$VENDOR\" does not exist; check the \$VENDOR variable in $0" && exit 5
-[[ ! -f $VENDOR/bin/phpunit ]] && echo "❌️ missing dependencies; try \`composer install\`" && echo && exit 6
+[[ -z "$VENDOR_PATH" ]] && echo "❌️ \$VENDOR_PATH cannot be empty" && exit 4
+[[ ! -d  "$VENDOR_PATH" ]] && echo "❌️ \"$VENDOR_PATH\" does not exist; check the \$VENDOR_PATH variable in $0" && exit 5
+[[ ! -f $VENDOR_PATH/bin/phpunit ]] && echo "❌️ missing dependencies; try \`composer install\`" && echo && exit 6
 
 
 # ========= Internal config =========
@@ -26,6 +26,7 @@ coverage_reports="$INSTALL_PATH/reports"
 
 export DRUPAL_ROOT
 export INSTALL_PATH
+export VENDOR_PATH
 
 # ========= Bootstrap Drupal =========
 phpunit_args=()
@@ -38,7 +39,7 @@ for arg in "$@"; do
 done
 
 # ========= Execute PHPUnit =========
-$VENDOR/bin/phpunit -c phpunit.xml "${phpunit_args[@]}"
-#$VENDOR/bin/phpunit -c phpunit.xml --testdox "${phpunit_args[@]}"
-#export XDEBUG_MODE=$XDEBUG_MODE,coverage;$VENDOR/bin/phpunit -c phpunit.xml --coverage-html="$coverage_reports" "${phpunit_args[@]}"
+$VENDOR_PATH/bin/phpunit -c phpunit.xml "${phpunit_args[@]}"
+#$VENDOR_PATH/bin/phpunit -c phpunit.xml --testdox "${phpunit_args[@]}"
+#export XDEBUG_MODE=$XDEBUG_MODE,coverage;$VENDOR_PATH/bin/phpunit -c phpunit.xml --coverage-html="$coverage_reports" "${phpunit_args[@]}"
 #echo "$coverage_reports/index.html"

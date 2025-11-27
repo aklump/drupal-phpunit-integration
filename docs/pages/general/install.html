@@ -42,8 +42,22 @@
   <div class="row mb-5 pt-5">
     <article class="col">
       <h1 class="mb-4 text-primary">Install</h1>
-      <ol>
-<li>composer require drupal/core-dev:^M.m.0 to match drupal/core</li>
+      <h2>This Package</h2>
+<pre><code class="shell">mkdir -p tests_phpunit/src
+echo "/vendor/\n*/.cache\n/.phpunit.cache\n/reports/\n" &gt; tests_phpunit/.gitignore
+</code></pre>
+<h3>Main Version</h3>
+<pre><code class="shell">echo '{"autoload":{"psr-4":{"\\\\AKlump\\\\Drupal\\\\PHPUnit\\\\Integration\\\\":"src"}},"repositories":[{"type":"github","url":"https://github.com/aklump/drupal-phpunit-integration"}]}' &gt; tests_phpunit/composer.json
+(cd tests_phpunit &amp;&amp; composer require aklump/drupal-phpunit-integration:^0)
+</code></pre>
+<h3>Dev Version</h3>
+<pre><code class="shell">echo '{"autoload":{"psr-4":{"\\\\AKlump\\\\Drupal\\\\PHPUnit\\\\Integration\\\\":"src"}},"repositories":[{"type":"path","url":"/Users/aklump/Code/Packages/php/drupal-phpunit-integration/app"}]}' &gt; tests_phpunit/composer.json
+(cd tests_phpunit &amp;&amp; composer require aklump/drupal-phpunit-integration:@dev)
+</code></pre>
+<ol>
+<li></li>
+<li><p>bin/run_phpunit_tests.sh --flush</p>
+</li>
 </ol>
     </article>
   </div>
@@ -54,7 +68,7 @@
               Version:
         <strong>0.0.24</strong>
         &bull;
-                    Last Update: <strong>10/13/2025</strong>
+                    Last Update: <strong>11/27/2025</strong>
           </div>
   </footer>
 
