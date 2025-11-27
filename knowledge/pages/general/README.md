@@ -17,7 +17,13 @@ The following code will:
 * Create a test runner at `bin/run_phpunit_tests.sh`
 
 ```shell
-export VERSION=^0;curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
+curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
+```
+
+### Install for PhpUnit 9
+
+```shell
+export VERSION=^9;curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
 ```
 
 ## Configuration

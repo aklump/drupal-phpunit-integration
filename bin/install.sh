@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Constants
-VERSION=${VERSION:-^0}
+VERSION=${VERSION:-@dev}
 DRUPAL_PATH="web/core/scripts/drupal"
 TEST_DIR="tests_phpunit"
 COMPOSER_CONFIG='{
