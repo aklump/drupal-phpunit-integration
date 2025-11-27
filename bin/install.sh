@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Constants
-VERSION=${VERSION:-@dev}
+VERSION=${VERSION:-'@dev'}
 DRUPAL_PATH="web/core/scripts/drupal"
 TEST_DIR="tests_phpunit"
 COMPOSER_CONFIG='{
@@ -25,4 +25,4 @@ mkdir -p "$INSTALL_DIR/src" && \
 echo "/vendor/\n*/.cache\n/.phpunit.cache\n/reports/\n" > "$INSTALL_DIR/.gitignore" && \
 echo "$COMPOSER_CONFIG" > "$INSTALL_DIR/composer.json" && \
 (cd "$INSTALL_DIR" && composer require aklump/drupal-phpunit-integration:$VERSION) && \
-"$TEST_DIR/vendor/aklump/drupal-phpunit-integration/bin/install.php" && \
+"$TEST_DIR/vendor/aklump/drupal-phpunit-integration/bin/install.php"
