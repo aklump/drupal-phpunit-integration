@@ -42,13 +42,14 @@
   <div class="row mb-5 pt-5">
     <article class="col">
       <h1 class="mb-4 text-primary">Drupal PHPUnit Integration Testing Framework</h1>
-      <h2>How to Install</h2>
+      <p><img class="img-fluid" src="../../images/hero.jpg" alt="Hero image" /></p>
+<h2>How to Install</h2>
 <p>The following code will:</p>
 <ul>
-<li>Create a subdirectory</li>
-<li>Install this package using Composer into subdirectory</li>
-<li>Copy phpunit.xml from Drupal core into subdirectory, replacing some values</li>
-<li>Create a test runner at bin/run_phpunit_tests.sh</li>
+<li>Create a subdirectory <code>tests_phpunit</code></li>
+<li>Install this package using Composer into <code>tests_phpunit</code></li>
+<li>Copy <code>phpunit.dist.xml</code> from Drupal core into <code>tests_phpunit</code>, replacing some values.</li>
+<li>Create a test runner at <code>bin/run_phpunit_tests.sh</code></li>
 </ul>
 <pre><code class="shell">export VERSION=^0;curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
 </code></pre>

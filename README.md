@@ -1,13 +1,15 @@
 # Drupal PHPUnit Integration Testing Framework
 
+![Hero image](images/hero.jpg)
+
 ## How to Install
 
 The following code will:
 
-* Create a subdirectory
-* Install this package using Composer into subdirectory
-* Copy phpunit.xml from Drupal core into subdirectory, replacing some values
-* Create a test runner at bin/run_phpunit_tests.sh
+* Create a subdirectory `tests_phpunit`
+* Install this package using Composer into `tests_phpunit`
+* Copy `phpunit.dist.xml` from Drupal core into `tests_phpunit`, replacing some values.
+* Create a test runner at `bin/run_phpunit_tests.sh`
 
 ```shell
 export VERSION=^0;curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
@@ -121,8 +123,6 @@ Ensure your module's _web/modules/custom/composer.json_ has the proper autoloadi
   }
 }
 ```
-
-
 
 ## What About `tests_phpunit/composer.lock`?
 
