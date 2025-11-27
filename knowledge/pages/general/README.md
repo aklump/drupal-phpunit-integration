@@ -15,7 +15,7 @@ The following code will:
 * Create a test running in bin/run_phpunit_tests.sh
 
 ```shell
-curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
+export VERSION=@dev;curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
 ```
 
 ## Test Class Namespace & File Structure
