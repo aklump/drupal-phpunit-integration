@@ -54,18 +54,13 @@
 <pre><code class="shell">export VERSION=^0;curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
 </code></pre>
 <h2>Configuration</h2>
-<p>Now open _tests<em>phpunit/phpunit.xml</em> and add one or more integration test directories:</p>
-<pre><code class="xml">
-&lt;testsuites&gt;
-    &lt;testsuite name="integration"&gt;
-        &lt;directory&gt;../web/modules/custom/alpha/tests/Integration/&lt;/directory&gt;
-        &lt;directory&gt;../web/modules/custom/charlie/tests/Integration/&lt;/directory&gt;
-    &lt;/testsuite&gt;
-&lt;/testsuites&gt;
-</code></pre>
+<ol>
+<li>Open <code>tests_phpunit/phpunit.xml</code></li>
+<li>Replace <code>testsuites testsuite[name="integration"] directory</code> with a real path.</li>
+<li>Replace <code>source include directory</code> with a real path.</li>
+</ol>
 <h2>Run Your Tests</h2>
 <ol>
-<li><code>cd</code> into the directory above web root.</li>
 <li><code>chmod u+x bin/run_phpunit_tests.sh</code></li>
 <li>Run tests with <code>bin/run_phpunit_tests.sh --flush</code> (use <code>--flush</code> just this first time, or when you need to rebuild the autoloading for dev).</li>
 </ol>
