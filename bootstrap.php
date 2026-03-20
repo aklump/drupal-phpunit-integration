@@ -12,7 +12,7 @@
  *
  * To flush the cache do like this:
  * @code
- *   $ php ./tests_integration/bootstrap.php flush
+ *   $ php ./tests_phpunit/bootstrap.php flush
  * @endcode
  *
  */
@@ -27,12 +27,20 @@ if (!class_exists('AKlump\Drupal\PHPUnit\Integration\Helper\GetEnv')) {
   require_once __DIR__ . '/src/Helper/GetEnv.php';
 }
 
+/** @var string $VENDOR_PATH The location of the Composer vendor dir. */
+$VENDOR_PATH = (new GetEnv())('VENDOR_PATH');
+if (!isset($VENDOR_PATH)) {
+  throw new RuntimeException("VENDOR_PATH environment variable cannot be empty" . PHP_EOL);
+}
+
+/** @var string $INSTALL_PATH Where this package is installed, usually a
+ * subdirectory of the main Drupal application. */
 $INSTALL_PATH = (new GetEnv())('INSTALL_PATH');
 if (!isset($INSTALL_PATH)) {
   throw new RuntimeException("INSTALL_PATH environment variable cannot be empty" . PHP_EOL);
 }
 
-require_once $INSTALL_PATH . '/vendor/autoload.php';
+require_once $VENDOR_PATH . '/autoload.php';
 require_once __DIR__ . '/src/Runner/BootstrapCache.php';
 require_once __DIR__ . '/src/Runner/AutoloadDev.php';
 
