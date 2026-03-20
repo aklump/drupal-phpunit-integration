@@ -50,20 +50,25 @@ trait MockDrupalEntityTrait {
       ]),
     ]);
 
-    foreach ($fields as $field_name => $field) {
-      $fields[$field_name] = $this->createFieldItemListMock($field);
-      $fields[$field_name]->method('getName')->willReturn($field_name);
-      $fields[$field_name]->method('getEntity')->willReturn($mock_entity);
-      $fields[$field_name]->method('getParent')->willReturn(
+    $create_field = function (string $field_name, array $field_data) use ($mock_entity) {
+      $new_field = $this->createFieldItemListMock($field_data);
+      $new_field->method('getName')->willReturn($field_name);
+      $new_field->method('getEntity')->willReturn($mock_entity);
+      $new_field->method('getParent')->willReturn(
         $this->createConfiguredMock(EntityAdapter::class, [
           'getEntity' => $mock_entity,
         ])
       );
-
       $field_definition = $this->createMock(FieldDefinitionInterface::class);
       $field_definition->method('getName')->willReturn($field_name);
-      $fields[$field_name]->method('getFieldDefinition')
+      $new_field->method('getFieldDefinition')
         ->willReturn($field_definition);
+
+      return $new_field;
+    };
+
+    foreach ($fields as $field_name => $field_data) {
+      $fields[$field_name] = $create_field($field_name, $field_data);
     }
 
     // Make the field known to hasField.
@@ -95,6 +100,15 @@ trait MockDrupalEntityTrait {
     $mock_entity
       ->method('getFields')
       ->willReturn($fields);
+
+    if (method_exists($class_to_mock, 'getTitle')) {
+      $mock_entity->method('getTitle')
+        ->willReturnCallback(function () use ($fields) {
+          $title = $fields['title'] ?? $this->createFieldItemListMock([]);
+
+          return $title->value;
+        });
+    }
 
     return $mock_entity;
   }

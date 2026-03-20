@@ -4,9 +4,9 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=0.0.20">
-      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=0.0.20">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=0.0.20">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=10.0.0">
+      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=10.0.0">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=10.0.0">
     <title>Install | Book</title>
 </head>
 <body class="my-5">
@@ -42,8 +42,22 @@
   <div class="row mb-5 pt-5">
     <article class="col">
       <h1 class="mb-4 text-primary">Install</h1>
-      <ol>
-<li>composer require drupal/core-dev:^M.m.0 to match drupal/core</li>
+      <h2>This Package</h2>
+<pre><code class="shell">mkdir -p tests_phpunit/src
+echo "/vendor/\n*/.cache\n/.phpunit.cache\n/reports/\n" &gt; tests_phpunit/.gitignore
+</code></pre>
+<h3>Main Version</h3>
+<pre><code class="shell">echo '{"autoload":{"psr-4":{"\\\\AKlump\\\\Drupal\\\\PHPUnit\\\\Integration\\\\":"src"}},"repositories":[{"type":"github","url":"https://github.com/aklump/drupal-phpunit-integration"}]}' &gt; tests_phpunit/composer.json
+(cd tests_phpunit &amp;&amp; composer require aklump/drupal-phpunit-integration:^0)
+</code></pre>
+<h3>Dev Version</h3>
+<pre><code class="shell">echo '{"autoload":{"psr-4":{"\\\\AKlump\\\\Drupal\\\\PHPUnit\\\\Integration\\\\":"src"}},"repositories":[{"type":"path","url":"/Users/aklump/Code/Packages/php/drupal-phpunit-integration/app"}]}' &gt; tests_phpunit/composer.json
+(cd tests_phpunit &amp;&amp; composer require aklump/drupal-phpunit-integration:@dev)
+</code></pre>
+<ol>
+<li></li>
+<li><p>bin/run_phpunit_tests.sh --flush</p>
+</li>
 </ol>
     </article>
   </div>
@@ -52,9 +66,9 @@
   <footer class="footer d-flex justify-content-center">
     <div class="flex-column justify-content-center">
               Version:
-        <strong>0.0.20</strong>
+        <strong>10.0.0</strong>
         &bull;
-                    Last Update: <strong>3/14/2025</strong>
+                    Last Update: <strong>11/27/2025</strong>
           </div>
   </footer>
 
@@ -120,7 +134,7 @@
     </li>
   
                                     <li data-page="troubleshooting" value="3">
-      <a class="js-page-link" href="troubleshooting.html">Error: Class "Drupal\commons_theme_support\ViewModes" not found<span
+      <a class="js-page-link" href="troubleshooting.html">Error: Class "Drupal\my_module\ViewModes" not found<span
               class="js-search-score
               badge
               bg-info rounded-pill badge-sm"></span></a>
@@ -176,7 +190,7 @@
     </li>
   
                                 <li data-page="troubleshooting" value="3">
-      <a class="js-page-link" href="troubleshooting.html">Error: Class "Drupal\commons_theme_support\ViewModes" not found</a>
+      <a class="js-page-link" href="troubleshooting.html">Error: Class "Drupal\my_module\ViewModes" not found</a>
     </li>
   
                                 <li data-page="why" value="4">
@@ -225,7 +239,7 @@
                                                 <a class="list-group-item list-group-item-action"
                  data-tags="[]" href="rewrite.html">s-examples--3</a>
                                                 <a class="list-group-item list-group-item-action"
-                 data-tags="[]" href="troubleshooting.html">Error: Class &quot;Drupal\commons_theme_support\ViewModes&quot; not found</a>
+                 data-tags="[]" href="troubleshooting.html">Error: Class &quot;Drupal\my_module\ViewModes&quot; not found</a>
                                                 <a class="list-group-item list-group-item-action"
                  data-tags="[]" href="why.html">Why do you Need This?</a>
                                                 <a class="list-group-item list-group-item-action"
@@ -242,9 +256,9 @@
   </div>
 </div>
 
-  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=0.0.20"></script>
-  <script src="../../dist/lunr.js?ver=0.0.20"></script>
-  <script src="../../dist/knowledge.min.js?ver=0.0.20"></script>
+  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=10.0.0"></script>
+  <script src="../../dist/lunr.js?ver=10.0.0"></script>
+  <script src="../../dist/knowledge.min.js?ver=10.0.0"></script>
 
 </body>
 </html>

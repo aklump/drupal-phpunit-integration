@@ -3,11 +3,23 @@
 namespace AKlump\Drupal\PHPUnit\Integration\Framework\MockObject;
 
 use Drupal\Core\Field\FieldItemInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\node\NodeInterface;
 use PHPUnit\Framework\TestCase;
 
 final class MockDrupalEntityTraitTest extends TestCase {
 
   use MockDrupalEntityTrait;
+
+  public function testGetTitle() {
+    /** @var \Drupal\node\NodeInterface $node */
+    $node = $this->createEntityMock('node', 'page', [
+      'title' => [
+        0 => ['value' => 'Somewhere Over the Rainbow'],
+      ],
+    ], '', NodeInterface::class);
+    $this->assertSame('Somewhere Over the Rainbow', $node->getTitle());
+  }
 
   public function dataForTestHasFieldProvider() {
     $tests = [];
@@ -62,7 +74,7 @@ final class MockDrupalEntityTraitTest extends TestCase {
 
   public function testFieldItemsWithGet() {
     $field_item_list = $this->mockEntity->get('field_main');
-    $this->assertInstanceOf(\Drupal\Core\Field\FieldItemListInterface::class, $field_item_list);
+    $this->assertInstanceOf(FieldItemListInterface::class, $field_item_list);
     $this->assertSame($field_item_list, $this->mockEntity->field_main);
 
     $field_item0 = $field_item_list->get(0);

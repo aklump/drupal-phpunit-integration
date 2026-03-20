@@ -1,0 +1,5 @@
+#!/bin/bash
+#[Config(php: 8.2.26)]
+export PATH="/Applications/MAMP//bin/php/php8.2.26/bin:$PATH"
+echo "😎 PhpSwap(ped)!"
+echo "👉 $(php -v | grep -e "PHP \d\.\d\.\d")"

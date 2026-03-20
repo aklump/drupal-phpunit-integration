@@ -12,7 +12,6 @@ class GitService {
     $this->baseDir = $base_dir;
   }
 
-
   /**
    * Retrieves the current Git branch name of the repository.
    *
