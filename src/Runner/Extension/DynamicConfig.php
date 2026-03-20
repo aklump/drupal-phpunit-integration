@@ -5,6 +5,7 @@ namespace AKlump\Drupal\PHPUnit\Integration\Runner\Extension;
 use AKlump\Drupal\PHPUnit\Integration\Helper\GetEnv;
 use AKlump\Drupal\PHPUnit\Integration\Helper\GetUserHelpForMissingSimpleTestDB;
 use AKlump\Drupal\PHPUnit\Integration\Helper\PutEnv;
+use AKlump\Drupal\PHPUnit\Integration\ThirdParty\DrupalService;
 use AKlump\Drupal\PHPUnit\Integration\ThirdParty\GitService;
 use AKlump\Drupal\PHPUnit\Integration\ThirdParty\LandoService;
 use PHPUnit\Runner\BeforeFirstTestHook;
@@ -62,10 +63,15 @@ final class DynamicConfig implements BeforeFirstTestHook {
       $db_based_value = $get_env($branch_key);
       $value = $db_based_value ?: $value;
     }
+
+    // Or, if Lando is running, try to get the database URL from Lando.
     if (!$value
       && ($lando_info = LandoService::getLandoInfo())) {
       $value = (new LandoService($lando_info))->getDatabaseUrl();
     }
+
+    // Finally, fallback to the database URL from the Drupal service.
+    $value = $value ?: (new DrupalService($DRUPAL_ROOT))->getDatabaseUrl();
 
     return strval($value);
   }
