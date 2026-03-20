@@ -3,7 +3,7 @@ id: troubleshooting
 tags: ''
 -->
 
-## Error: Class "Drupal\commons_theme_support\ViewModes" not found
+## Error: Class "Drupal\my_module\Bar" not found
 
 ### Fix
 
@@ -20,6 +20,9 @@ Path cannot be empty
 ### Fix
 
 Make sure you have installed "drupal/core-dev" at the same major/minor as "drupal/core"
+
+1. grep drupal/core-recommended composer.json
+2. `composer require --dev drupal/core-dev:`..., e.g. `composer require --dev drupal/core-dev:9.5.11`
 
 ## PHP Warning:  Undefined array key "INSTALL_PATH"
 
