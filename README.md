@@ -1,5 +1,7 @@
 # Drupal PHPUnit Integration Testing Framework
 
+![Hero image](images/hero.jpg)
+
 ## How to Install
 
 **You must execute the following in the directory above _web_.**  It will install this package in a directory called _tests\_integration_.

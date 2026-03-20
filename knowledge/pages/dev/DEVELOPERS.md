@@ -14,5 +14,6 @@ The PHPUnit configuration file _self.xml_, is located in the root of the package
 ```shell
 export DRUPAL_ROOT=/Users/aklump/Code/Projects/MyDrupalProject/web
 export INSTALL_PATH=/Users/aklump/Code/Projects/MyDrupalProject/
-vendor/bin/phpunit -c /Users/aklump/Code/Packages/php/drupal-phpunit-integration/app/self.xml
+export VENDOR_PATH=/Users/aklump/Code/Projects/StructuralEngineers/Seao/site/app/vendor
+vendor/bin/phpunit -c /Users/aklump/Code/Packages/php/drupal-phpunit-integration/app/self.xml --testdox
 ```
