@@ -45,6 +45,15 @@ final class DynamicConfig implements BeforeFirstTestHook {
    */
   private function getSimpletestDb(): string {
     $get_env = new GetEnv();
+
+    // This will take first precedence
+    // @see drupal::/web/core/tests/README.md
+    $simpletest_db = (string) $get_env('SIMPLETEST_DB');
+    if ($simpletest_db) {
+      return $simpletest_db;
+    }
+
+    // Otherwise, try to get the database URL from the environment/git branch
     $value = $get_env('DATABASE_URL');
     $DRUPAL_ROOT = $get_env('DRUPAL_ROOT');
     $branch_name = (new GitService($DRUPAL_ROOT))->getBranchName();
