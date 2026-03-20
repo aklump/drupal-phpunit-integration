@@ -11,6 +11,7 @@ use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\user\UserInterface;
 
+#[AllowDynamicProperties]
 trait MockDrupalEntityTrait {
 
   /**
@@ -31,7 +32,7 @@ trait MockDrupalEntityTrait {
    *
    * @param string $entity_type_id
    * @param string $bundle
-   * @param array[] $fields
+   * @param array[]|int[]|string[] $fields
    *   Keyed by the field name. Each value is an array representing the field
    *   items.  Each of those arrays is an array representing the item data.
    * @param string $entity_type_label
@@ -86,16 +87,17 @@ trait MockDrupalEntityTrait {
      * @return \Drupal\Core\Field\FieldItemListInterface
      */
     $get_field = function (string $field_name) use ($fields): FieldItemListInterface {
-      return $fields[$field_name] ?? $this->createFieldItemListMock([]);
+      if ($fields[$field_name] instanceof FieldItemListInterface) {
+        return $fields[$field_name];
+      }
+
+      return $this->createFieldItemListMock([]);
     };
 
     // Make the field iterable.
     $mock_entity
       ->method('get')
       ->willReturnCallback($get_field);
-    foreach (array_keys($fields) as $field_name) {
-      $mock_entity->{$field_name} = $get_field($field_name);
-    }
 
     $mock_entity
       ->method('getFields')

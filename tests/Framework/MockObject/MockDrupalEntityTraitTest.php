@@ -2,6 +2,7 @@
 
 namespace AKlump\Drupal\PHPUnit\Integration\Framework\MockObject;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\node\NodeInterface;
@@ -10,6 +11,32 @@ use PHPUnit\Framework\TestCase;
 final class MockDrupalEntityTraitTest extends TestCase {
 
   use MockDrupalEntityTrait;
+
+  private $mockEntity;
+
+  public function testReferencedEntities() {
+    $account_from = $this->createEntityMock('node', 'account', ['nid' => 9]);
+    $transaction = $this->createEntityMock('node', 'transaction', [
+      'field_account_from' => [0 => $account_from],
+    ]);
+
+    $account_from = $transaction->get('field_account_from');
+    $account_from = $transaction->get('field_account_from')->get(0);
+    $account_from = $transaction->get('field_account_from')
+      ->get(0)
+      ->get('entity');
+    $account_from = $transaction->get('field_account_from')
+      ->get(0)
+      ->get('entity')
+      ->getTarget();
+    $account_from = $transaction->get('field_account_from')
+      ->get(0)
+      ->get('entity')
+      ->getTarget()
+      ->getEntity();
+    $this->assertSame('9', $account_from->id());
+    $this->assertInstanceOf(EntityInterface::class, $account_from);
+  }
 
   public function testGetTitle() {
     /** @var \Drupal\node\NodeInterface $node */
@@ -43,7 +70,7 @@ final class MockDrupalEntityTraitTest extends TestCase {
   /**
    * @dataProvider dataForTestHasFieldProvider
    */
-  public function testHasField(\Drupal\Core\Entity\EntityInterface $mock_entity) {
+  public function testHasField(EntityInterface $mock_entity) {
     $this->assertTrue($mock_entity->hasField('field_main'));
     $this->assertFalse($mock_entity->hasField('field_secondary'));
   }
@@ -64,7 +91,7 @@ final class MockDrupalEntityTraitTest extends TestCase {
   public function testGetFields() {
     $fields = $this->mockEntity->getFields();
     $this->assertArrayHasKey('field_main', $fields);
-    $this->assertSame($fields['field_main'], $this->mockEntity->field_main);
+    $this->assertSame($fields['field_main'], $this->mockEntity->get('field_main'));
   }
 
   public function testFieldItemListGetName() {
@@ -75,7 +102,6 @@ final class MockDrupalEntityTraitTest extends TestCase {
   public function testFieldItemsWithGet() {
     $field_item_list = $this->mockEntity->get('field_main');
     $this->assertInstanceOf(FieldItemListInterface::class, $field_item_list);
-    $this->assertSame($field_item_list, $this->mockEntity->field_main);
 
     $field_item0 = $field_item_list->get(0);
     $this->assertInstanceOf(FieldItemInterface::class, $field_item0);
@@ -114,19 +140,12 @@ final class MockDrupalEntityTraitTest extends TestCase {
   }
 
   public function testFieldValue() {
-    $this->assertSame('Charlie', $this->mockEntity->field_first_name->value);
     $this->assertSame('Charlie', $this->mockEntity->get('field_first_name')->value);
   }
 
   public function testCanIterateOnFieldItemsList() {
     $count = 0;
     foreach ($this->mockEntity->get('field_main') as $item) {
-      ++$count;
-    }
-    $this->assertSame(2, $count);
-
-    $count = 0;
-    foreach ($this->mockEntity->field_main as $item) {
       ++$count;
     }
     $this->assertSame(2, $count);
