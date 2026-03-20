@@ -26,7 +26,11 @@ final class DynamicConfig implements BeforeFirstTestHook {
     $putenv = new PutEnv();
     $db = $putenv('SIMPLETEST_DB', $this->getSimpletestDb());
     if (!$db) {
-      $hint = (new GetUserHelpForMissingSimpleTestDB())();
+      $phpunit_xml_path = (new GetEnv())('INSTALL_PATH') . '/phpunit.xml';
+      if (!file_exists($phpunit_xml_path)) {
+        $phpunit_xml_path = 'INSTALL_PATH/phpunit.xml';
+      }
+      $hint = (new GetUserHelpForMissingSimpleTestDB())($phpunit_xml_path);
       throw new RuntimeException($hint);
     }
     $putenv('SIMPLETEST_BASE_URL', $this->getSimpletestBaseUrl());

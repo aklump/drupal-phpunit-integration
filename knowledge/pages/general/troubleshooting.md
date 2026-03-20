@@ -3,7 +3,14 @@ id: troubleshooting
 tags: ''
 -->
 
-## Error: Class "Drupal\my_module\ViewModes" not found
+## Error: Drupal requires Prophecy PhpUnit when using PHPUnit 9 or greater.
+
+### Fix
+
+1. You must affect the $VENDOR_PATH dependencies, so navigate to the directory that controls them, e.g. `../$VENDOR_PATH`
+2. `composer require --dev phpspec/prophecy-phpunit:^2`
+
+## Error: Class "Drupal\my_module\Bar" not found
 
 ### Fix
 
@@ -15,11 +22,14 @@ tags: ''
 ## Error in bootstrap script: ValueError:
 
 Path cannot be empty
-#0 /Users/aaronklump/Code/Projects/NationalUniversity/TheCommons/site/app/web/core/tests/Drupal/TestTools/PhpUnitCompatibility/PhpUnit8/ClassWriter.php(58): file_get_contents('')
+#0 /Users/aaronklump/Code/Projects/site/app/web/core/tests/Drupal/TestTools/PhpUnitCompatibility/PhpUnit8/ClassWriter.php(58): file_get_contents('')
 
 ### Fix
 
 Make sure you have installed "drupal/core-dev" at the same major/minor as "drupal/core"
+
+1. grep drupal/core-recommended composer.json
+2. `composer require --dev drupal/core-dev:`..., e.g. `composer require --dev drupal/core-dev:9.5.11`
 
 ## PHP Warning:  Undefined array key "INSTALL_PATH"
 

@@ -4,19 +4,17 @@ namespace AKlump\Drupal\PHPUnit\Integration\Helper;
 
 class GetUserHelpForMissingSimpleTestDB {
 
-  public function __invoke(): string {
+  public function __invoke(string $phpunit_xml_path): string {
     return <<<EOD
-    SIMPLETEST_DB is not set.
+    SIMPLETEST_DB is not set and could not be discovered.
     
-    There are several solutions:
+    1. Open $phpunit_xml_path
+    2. Find <env name="SIMPLETEST_DB" value=""/>
+    1. If not found, add it as `<php><env.../></php>`
+    1. Set the value to the database connection string like this:
     
-    Hard-coded:
-    1. In phpunit.xml, set the SIMPLETEST_DB environment variable.
-    1. e.g., export SIMPLETEST_DB=mysql://username:password@localhost/databasename#table_prefix
-    
-    Environment variables:
-    
-    1. If you are using a .env file, add SIMPLETEST_DB=mysql://username:password@localhost/databasename#table_prefix
+       <env name="SIMPLETEST_DB" value='mysql://username:password@localhost/databasename#table_prefix'/>
+
     EOD;
   }
 }
