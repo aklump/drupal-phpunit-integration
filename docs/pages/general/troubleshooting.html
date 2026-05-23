@@ -7,8 +7,8 @@
       <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=10.0.0">
       <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=10.0.0">
       <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=10.0.0">
-    <title>Error: Drupal requires Prophecy PhpUnit when using PHPUnit 9 or greater. | Book</title>
-</head>
+        <title>Error: Drupal requires Prophecy PhpUnit when using PHPUnit 9 or greater. | Book</title>
+  </head>
 <body class="my-5">
 
 <header class="header bg-light fixed-top p-2 pt-1">
@@ -58,7 +58,7 @@
 </ul>
 <h2>Error in bootstrap script: ValueError:</h2>
 <p>Path cannot be empty
-#0 /Users/aaronklump/Code/Projects/site/app/web/core/tests/Drupal/TestTools/PhpUnitCompatibility/PhpUnit8/ClassWriter.php(58): file_get_contents('')</p>
+#0 /Users/aaronklump/Code/Projects/MyProject/site/app/web/core/tests/Drupal/TestTools/PhpUnitCompatibility/PhpUnit8/ClassWriter.php(58): file_get_contents('')</p>
 <h3>Fix</h3>
 <p>Make sure you have installed "drupal/core-dev" at the same major/minor as "drupal/core"</p>
 <ol>
@@ -78,6 +78,11 @@ Change the installed version of psr/container to match that of the Drupal instal
 <pre><code class="php">cd tests_php_unit
 composer require psr/container:^1.1
 </code></pre>
+<h2>Interface "PHPUnit\Runner\BeforeFirstTestHook" not found</h2>
+<ul>
+<li>Make sure you are installing </li>
+<li>https://github.com/sebastianbergmann/phpunit/issues/4595</li>
+</ul>
     </article>
   </div>
 </main>
@@ -87,7 +92,7 @@ composer require psr/container:^1.1
               Version:
         <strong>10.0.0</strong>
         &bull;
-                    Last Update: <strong>3/20/2026</strong>
+                    Last Update: <strong>5/23/2026</strong>
           </div>
   </footer>
 
