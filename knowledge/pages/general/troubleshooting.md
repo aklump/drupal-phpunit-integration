@@ -3,6 +3,13 @@ id: troubleshooting
 tags: ''
 -->
 
+## Error: Drupal requires Prophecy PhpUnit when using PHPUnit 9 or greater.
+
+### Fix
+
+1. You must affect the $VENDOR_PATH dependencies, so navigate to the directory that controls them, e.g. `../$VENDOR_PATH`
+2. `composer require --dev phpspec/prophecy-phpunit:^2`
+
 ## Error: Class "Drupal\my_module\Bar" not found
 
 ### Fix
@@ -15,7 +22,7 @@ tags: ''
 ## Error in bootstrap script: ValueError:
 
 Path cannot be empty
-#0 /Users/aaronklump/Code/Projects/NationalUniversity/TheCommons/site/app/web/core/tests/Drupal/TestTools/PhpUnitCompatibility/PhpUnit8/ClassWriter.php(58): file_get_contents('')
+#0 /Users/aaronklump/Code/Projects/MyProject/site/app/web/core/tests/Drupal/TestTools/PhpUnitCompatibility/PhpUnit8/ClassWriter.php(58): file_get_contents('')
 
 ### Fix
 
@@ -43,3 +50,8 @@ Change the installed version of psr/container to match that of the Drupal instal
 cd tests_php_unit
 composer require psr/container:^1.1
 ```
+
+## Interface "PHPUnit\Runner\BeforeFirstTestHook" not found
+
+* Make sure you are installing 
+* https://github.com/sebastianbergmann/phpunit/issues/4595
