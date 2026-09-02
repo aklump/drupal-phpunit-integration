@@ -28,4 +28,4 @@ echo '{"autoload":{"psr-4":{"\\\\AKlump\\\\Drupal\\\\PHPUnit\\\\Integration\\\\"
 
 7. 
 
-2. bin/run_phpunit_tests.sh --flush
+2. bin/run-phpunit-tests.sh --flush

@@ -215,6 +215,6 @@ if (!file_exists($runner_path)) {
 // Final step
 echo "\n## Final step\n";
 echo "Run the tests with:\n";
-echo "bin/run_phpunit_tests.sh --flush\n\n";
+echo "bin/run-phpunit-tests.sh --flush\n\n";
 
 echo "Installation completed successfully!\n";

@@ -58,11 +58,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- init/run_phpunit_tests.sh; you should cherry pick these changes on update.
+- init/run-phpunit-tests.sh; you should cherry pick these changes on update.
 
 ### Fixed
 
-- An issue that wouldn't pass more than one arg to PhpUnit in file: init/run_phpunit_tests.sh was
+- An issue that wouldn't pass more than one arg to PhpUnit in file: init/run-phpunit-tests.sh was
 
 ## [0.0.1] - 2023-10-28
 

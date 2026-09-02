@@ -14,7 +14,7 @@ The following code will:
 * Create a subdirectory `tests_phpunit`
 * Install this package using Composer into `tests_phpunit`
 * Copy `phpunit.dist.xml` from Drupal core into `tests_phpunit`, replacing some values.
-* Create a test runner at `bin/run_phpunit_tests.sh`
+* Create a test runner at `bin/run-phpunit-tests.sh`
 
 ```shell
 curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
@@ -34,12 +34,12 @@ export VERSION=^9;curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpu
 
 ## Run Your Tests
 
-1. `chmod u+x bin/run_phpunit_tests.sh`
-3. Run tests with `bin/run_phpunit_tests.sh --flush` (use `--flush` just this first time, or when you need to rebuild the autoloading for dev).
+1. `chmod u+x bin/run-phpunit-tests.sh`
+3. Run tests with `bin/run-phpunit-tests.sh --flush` (use `--flush` just this first time, or when you need to rebuild the autoloading for dev).
 
 The first time the tests are run, a cache is built that speeds up subsequent
 runs. To flush these caches, add the `--flush` parameter,
-e.g. `bin/run_phpunit_tests.sh --flush`.
+e.g. `bin/run-phpunit-tests.sh --flush`.
 
 ## Built-in Test Support Classes
 
@@ -69,7 +69,7 @@ web/modules/custom
             └── phpunit.xml
 ```
 
-Given the above module file structure, you can see two directories in _tests_.  _tests/Unit/FooTest.php_ can be run using _alpha/bin/run_unit_tests.sh_ and has no Drupal dependencies. Therefore it's straight-up PHPUnit stuff. On the other hand,  _tests/Integration/FooTest.php_ cannot be run in the same manner as it has Drupal class dependencies, hence it "integrates" with Drupal. For that you must use _tests_phpunit/bin/run_phpunit_tests.sh_.
+Given the above module file structure, you can see two directories in _tests_.  _tests/Unit/FooTest.php_ can be run using _alpha/bin/run_unit_tests.sh_ and has no Drupal dependencies. Therefore it's straight-up PHPUnit stuff. On the other hand,  _tests/Integration/FooTest.php_ cannot be run in the same manner as it has Drupal class dependencies, hence it "integrates" with Drupal. For that you must use _tests_phpunit/bin/run-phpunit-tests.sh_.
 
 **Use `namespace Drupal\Tests\alpha\Unit;` for unit test classes.**
 
@@ -142,10 +142,10 @@ composer update
 **This will only update the _vendor/_ directory so your changes and files
 in _tests_phpunit_ are not affected.**
 
-You may want to diff _run_phpunit_tests.sh_ and _phpunit.xml_ from time to time and cherry pick as necessary, however, _CHANGELOG.md_ should make note of any changes to these files.
+You may want to diff _run-phpunit-tests.sh_ and _phpunit.xml_ from time to time and cherry pick as necessary, however, _CHANGELOG.md_ should make note of any changes to these files.
 
 ```php
 cd tests_phpunit
-diff vendor/aklump/drupal-phpunit-integration/init/run_phpunit_tests.sh ../bin/run_phpunit_tests.sh
+diff vendor/aklump/drupal-phpunit-integration/init/run-phpunit-tests.sh ../bin/run-phpunit-tests.sh
 diff vendor/aklump/drupal-phpunit-integration/init/phpunit.xml.dist phpunit.xml
 ```
