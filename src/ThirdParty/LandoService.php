@@ -2,6 +2,9 @@
 
 namespace AKlump\Drupal\PHPUnit\Integration\ThirdParty;
 
+/**
+ * Provides functionality to interact with Lando environment services.
+ */
 class LandoService {
 
   private static array $cache;
@@ -9,27 +12,59 @@ class LandoService {
   private array $landoInfo;
 
   /**
-   * @param array $lando_info Pass the lando info to be parsed. Such as coming from self::$landoInfo.
+   * @param array $landoInfo Pass the lando info to be parsed. Such as coming
+   *   from self::$landoInfo.
    */
-  public function __construct(array $lando_info) {
-    $this->landoInfo = $lando_info;
+  public function __construct(array $landoInfo) {
+    $this->landoInfo = $landoInfo;
   }
 
   /**
-   * @return string The database connection for the Lando app.
+   * Builds a database URL from Lando service connection information.
+   *
+   * When PHPUnit runs inside Lando, the internal service connection is used
+   * because service hostnames such as "database" are resolvable from within
+   * the
+   * Lando network. When PHPUnit runs from the host machine, the external
+   * connection is required because internal service hostnames are not
+   * resolvable outside Lando.
+   *
+   * @return string
+   *   A database URL suitable for SIMPLETEST_DB, or an empty string when no
+   *   database service is present in the Lando service information.
+   *
+   * @throws \RuntimeException
+   *   Thrown when a database service is present, but the connection
+   *   information
+   *   required for the current runtime context is missing.
    */
   public function getDatabaseUrl(): string {
-    $lando_info = $this->landoInfo;
-    while ($service = array_shift($lando_info)) {
-      if (isset($service['creds']['database'])) {
-        return sprintf('mysql://%s:%s@%s%s/%s',
-          $service['creds']['user'],
-          $service['creds']['password'],
-          $service['internal_connection']['host'],
-          ltrim(':' . ($service['internal_connection']['port'] ?? '')),
-          $service['creds']['database'],
-        );
+    $isRunningInLando = getenv('LANDO') === 'ON';
+    $connectionKey = $isRunningInLando ? 'internal_connection' : 'external_connection';
+    $landoInfo = $this->landoInfo;
+
+    while ($service = array_shift($landoInfo)) {
+      if (!isset($service['creds']['database'])) {
+        continue;
       }
+
+      if (empty($service[$connectionKey]['host'])) {
+        throw new \RuntimeException(sprintf(
+          'Lando database service was found, but "%s" is missing. Cannot build PHPUnit database URL while running %s Lando.',
+          $connectionKey,
+          $isRunningInLando ? 'inside' : 'outside'
+        ));
+      }
+
+      $port = $service[$connectionKey]['port'] ?? '';
+
+      return sprintf('mysql://%s:%s@%s%s/%s',
+        $service['creds']['user'],
+        $service['creds']['password'],
+        $service[$connectionKey]['host'],
+        $port !== '' ? ':' . $port : '',
+        $service['creds']['database'],
+      );
     }
 
     return '';
@@ -39,12 +74,12 @@ class LandoService {
    * @return string  The base URL of the lando application web server.
    */
   public function getBaseUrl(): string {
-    $appserver = array_values(array_filter($this->landoInfo, function ($service) {
+    $appserver = array_values(array_filter($this->landoInfo, function($service) {
       return 'appserver' === $service['service'];
     }))[0] ?? [];
     $appserver += ['urls' => []];
 
-    return array_values(array_filter(($appserver['urls']), function ($url) {
+    return array_values(array_filter(($appserver['urls']), function($url) {
       return strstr($url, 'localhost') === FALSE && strstr($url, 'http') !== FALSE;
     }))[0] ?? '';
   }
@@ -54,7 +89,8 @@ class LandoService {
    *
    * Multiple calls are performant as the data is cached per directory path.
    *
-   * @return array Returns an array containing Lando information for current working directory
+   * @return array Returns an array containing Lando information for current
+   *   working directory
    */
   public static function getLandoInfo(): array {
     static::$cache['context'] = getcwd();
@@ -65,4 +101,5 @@ class LandoService {
 
     return static::$cache['info'][static::$cache['context']];
   }
+
 }
