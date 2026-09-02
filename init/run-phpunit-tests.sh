@@ -1,4 +1,54 @@
 #!/usr/bin/env bash
+
+#!/usr/bin/env bash
+
+# Run PHPUnit tests using this project's Drupal PHPUnit configuration.
+#
+# Usage:
+#   bin/run_phpunit_tests.sh [options] [phpunit-args]
+#
+# Options:
+#   --coverage
+#     Generate an HTML coverage report in tests_phpunit/reports. This is slower
+#     and requires a coverage driver such as Xdebug or PCOV.
+#
+#   --flush
+#     Flush the Drupal PHPUnit integration bootstrap cache before running tests.
+#
+#   -c, --configuration, --configuration=FILE
+#     Ignored intentionally. This script always uses tests_phpunit/phpunit.xml so
+#     relative suite paths, Drupal bootstrap paths, and dynamic test configuration
+#     are resolved consistently.
+#
+# Examples:
+#   # Run all configured PHPUnit tests.
+#   bin/run_phpunit_tests.sh
+#
+#   # Run all kernel tests.
+#   bin/run_phpunit_tests.sh --kernel
+#
+#   # Run one test class by PHPUnit filter.
+#   bin/run_phpunit_tests.sh --kernel --filter=UserFormatNameAlterTest
+#
+#   # Run one test file. Paths may be relative to the project root.
+#   bin/run_phpunit_tests.sh web/modules/custom/commons_core/tests/src/Kernel/UserFormatNameAlterTest.php
+#
+#   # Flush bootstrap cache, then run kernel tests.
+#   bin/run_phpunit_tests.sh --flush --kernel
+#
+#   # Generate coverage for a filtered run.
+#   bin/run_phpunit_tests.sh --coverage --filter=GenerateSortByTest
+#
+# Notes:
+#   CLI arguments not handled by this script are passed through to PHPUnit.
+#   Existing project-root-relative file paths are converted to absolute paths
+#   before PHPUnit runs because this script executes PHPUnit from tests_phpunit/.
+#
+#   Database configuration for Drupal kernel/functional tests is supplied by the
+#   Drupal PHPUnit integration's dynamic configuration. When running under Lando,
+#   it should use Lando's internal database connection. When running from the host
+#   machine, it should use Lando's external database connection.
+
 s="${BASH_SOURCE[0]}";[[ "$s" ]] || s="${(%):-%N}";while [ -h "$s" ];do d="$(cd -P "$(dirname "$s")" && pwd)";s="$(readlink "$s")";[[ $s != /* ]] && s="$d/$s";done;__DIR__=$(cd -P "$(dirname "$s")" && pwd)
 
 # ========= Begin Configuration =========
@@ -31,7 +81,10 @@ VENDOR_PATH="$(cd "$__DIR__/$VENDOR_PATH" && pwd)"
 [[ -d "$VENDOR_PATH" ]] || { echo "❌️ \"$VENDOR_PATH\" does not exist; check the \$VENDOR_PATH variable in $0"; exit 5; }
 [[ -f "$VENDOR_PATH/bin/phpunit" ]] || { echo "❌️ missing dependencies; try \`composer install\`"; echo; exit 6; }
 
+
 # ========= Internal config =========
+PROJECT_ROOT="$(cd "$__DIR__/.." && pwd)"
+
 [[ -n "$PHP_BIN" ]] && export PATH="$PHP_BIN:$PATH"
 
 # shellcheck disable=SC2034
@@ -42,23 +95,52 @@ export INSTALL_PATH
 export VENDOR_PATH
 
 # ========= Bootstrap Drupal =========
+skip_next_arg=false
+
 for arg in "$@"; do
+  if [[ "$skip_next_arg" == true ]]; then
+    skip_next_arg=false
+    continue
+  fi
+
   case "$arg" in
     --flush)
       bootstrap_file="$VENDOR_PATH/aklump/drupal-phpunit-integration/bootstrap.php"
       [[ -f "$bootstrap_file" ]] || { echo "❌️ \"$bootstrap_file\" does not exist; try \`composer install\`"; exit 8; }
       php "$bootstrap_file" --flush
       ;;
+
     --coverage)
       CODE_COVERAGE=true
       ;;
+
+    --configuration=*)
+      # This script owns PHPUnit configuration. Ignore external config args so
+      # callers do not accidentally point PHPUnit at the wrong phpunit.xml.
+      ;;
+
+    --configuration|-c)
+      # Ignore this arg and its value for the same reason as above.
+      skip_next_arg=true
+      ;;
+
+    /*)
+      PHPUNIT_ARGS=("${PHPUNIT_ARGS[@]}" "$arg")
+      ;;
+
     *)
       # Preserve each forwarded PHPUnit argument as a single argument, including
       # values containing spaces.
-      PHPUNIT_ARGS=("${PHPUNIT_ARGS[@]}" "$arg")
+      if [[ -e "$PROJECT_ROOT/$arg" ]]; then
+        PHPUNIT_ARGS=("${PHPUNIT_ARGS[@]}" "$PROJECT_ROOT/$arg")
+      else
+        PHPUNIT_ARGS=("${PHPUNIT_ARGS[@]}" "$arg")
+      fi
       ;;
   esac
 done
+
+cd "$INSTALL_PATH" || exit 2
 
 # ========= Execute PHPUnit =========
 if [[ "$CODE_COVERAGE" == true ]]; then
