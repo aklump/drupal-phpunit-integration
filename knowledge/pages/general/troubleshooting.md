@@ -15,7 +15,7 @@ tags: ''
 ### Fix
 
 1. Use the `--flush` flag...
-2. `./run_phpunit_tests.sh --flush`
+2. `./run-phpunit-tests.sh --flush`
 
 * [Possible more info](https://drupal.stackexchange.com/a/299070)
 
