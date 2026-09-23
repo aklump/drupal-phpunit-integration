@@ -5,4 +5,4 @@ preserve_patch_zero: true
 push_tags: true
 remote: origin
 version_file: .web_package/config.yml
-version: 10.1.1
+version: 10.2.0
