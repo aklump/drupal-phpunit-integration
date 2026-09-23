@@ -9,6 +9,7 @@ use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\TypedData\DataReferenceInterface;
 use Drupal\user\UserInterface;
 
 #[AllowDynamicProperties]
@@ -35,6 +36,9 @@ trait MockDrupalEntityTrait {
    * @param array[]|int[]|string[] $fields
    *   Keyed by the field name. Each value is an array representing the field
    *   items.  Each of those arrays is an array representing the item data.
+   *   A scalar (non-array) value instead configures the mocked entity's ID,
+   *   e.g. passing ['nid' => 9] makes id() return "9", rather than adding a
+   *   field named "nid".
    * @param string $entity_type_label
    *   Optional, otherwise $entity_type_id will be used.
    *
@@ -50,6 +54,13 @@ trait MockDrupalEntityTrait {
         'getLabel' => $entity_type_label ?: $entity_type_id,
       ]),
     ]);
+
+    foreach ($fields as $field_name => $field_data) {
+      if (!is_array($field_data)) {
+        $mock_entity->method('id')->willReturn((string) $field_data);
+        unset($fields[$field_name]);
+      }
+    }
 
     $create_field = function (string $field_name, array $field_data) use ($mock_entity) {
       $new_field = $this->createFieldItemListMock($field_data);
@@ -142,10 +153,12 @@ trait MockDrupalEntityTrait {
     $field_item_list->method('getValue')->willReturn($field_item_list_value);
 
     foreach ($field_item_list_value as $index => $field_item) {
-      if (is_object($field_item)) {
+      if ($field_item instanceof FieldItemInterface) {
         continue;
       }
-      $field_item_list_value[$index] = $this->_getFieldItemMock($field_item);
+      $field_item_list_value[$index] = is_object($field_item)
+        ? $this->_getEntityReferenceFieldItemMock($field_item)
+        : $this->_getFieldItemMock($field_item);
       $field_item_list_value[$index]->method('getName')->willReturn($index);
       $field_item_list_value[$index]->method('getParent')
         ->willReturn($field_item_list);
@@ -186,6 +199,34 @@ trait MockDrupalEntityTrait {
     $field_item->method('get')->willReturnCallback($callback);
 
     (new MakeMockIterable())($field_item, $field_item_value);
+
+    return $field_item;
+  }
+
+  /**
+   * Create a field item mock for an entity reference field.
+   *
+   * Mimics the "entity" computed property of an entity reference field
+   * item, e.g. $item->get('entity')->getTarget()->getEntity().
+   *
+   * @param object $target_entity
+   *   A mocked entity, such as returned by self::createEntityMock().
+   *
+   * @return \Drupal\Core\Field\FieldItemInterface
+   */
+  private function _getEntityReferenceFieldItemMock($target_entity) {
+    $entity_adapter = $this->createConfiguredMock(EntityAdapter::class, [
+      'getEntity' => $target_entity,
+    ]);
+    $data_reference = $this->createConfiguredMock(DataReferenceInterface::class, [
+      'getTarget' => $entity_adapter,
+    ]);
+    $callback = function ($key) use ($data_reference) {
+      return 'entity' === $key ? $data_reference : NULL;
+    };
+    $field_item = $this->createMock(FieldItemInterface::class);
+    $field_item->method('__get')->willReturnCallback($callback);
+    $field_item->method('get')->willReturnCallback($callback);
 
     return $field_item;
   }

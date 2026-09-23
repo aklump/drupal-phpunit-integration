@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\node\NodeInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class MockDrupalEntityTraitTest extends TestCase {
@@ -48,29 +49,27 @@ final class MockDrupalEntityTraitTest extends TestCase {
     $this->assertSame('Somewhere Over the Rainbow', $node->getTitle());
   }
 
-  public function dataForTestHasFieldProvider() {
-    $tests = [];
-    $tests[] = [
-      $this->createEntityMock('node', 'page', [
-        'field_main' => [
-          ['field_tag' => 'lorem'],
-          ['field_tag' => 'ipsum'],
+  public static function dataForTestHasFieldProvider(): array {
+    return [
+      [
+        [
+          'field_main' => [
+            ['field_tag' => 'lorem'],
+            ['field_tag' => 'ipsum'],
+          ],
         ],
-      ]),
+      ],
+      [
+        [
+          'field_main' => [],
+        ],
+      ],
     ];
-    $tests[] = [
-      $this->createEntityMock('node', 'page', [
-        'field_main' => [],
-      ]),
-    ];
-
-    return $tests;
   }
 
-  /**
-   * @dataProvider dataForTestHasFieldProvider
-   */
-  public function testHasField(EntityInterface $mock_entity) {
+  #[DataProvider('dataForTestHasFieldProvider')]
+  public function testHasField(array $fields) {
+    $mock_entity = $this->createEntityMock('node', 'page', $fields);
     $this->assertTrue($mock_entity->hasField('field_main'));
     $this->assertFalse($mock_entity->hasField('field_secondary'));
   }
