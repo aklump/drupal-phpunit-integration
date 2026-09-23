@@ -5,7 +5,7 @@ tags: ''
 
 # Drupal PHPUnit Integration Testing Framework
 
-![Hero image](../../images/hero.jpg)
+![Hero image](../../images/drupal-phpunit-integration.jpg)
 
 ## How to Install
 
