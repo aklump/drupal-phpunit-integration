@@ -20,7 +20,7 @@ class GitService {
   public function getBranchName(): string {
     static::$cache['context'] = $this->baseDir;
     if (!isset(static::$cache['branch'][static::$cache['context']])) {
-      static::$cache['branch'][static::$cache['context']] = exec('cd ' . $this->baseDir . ' && git rev-parse --abbrev-ref HEAD 2>/dev/null');
+      static::$cache['branch'][static::$cache['context']] = exec('cd ' . escapeshellarg($this->baseDir) . ' && git rev-parse --abbrev-ref HEAD 2>/dev/null');
     }
 
     return static::$cache['branch'][static::$cache['context']];

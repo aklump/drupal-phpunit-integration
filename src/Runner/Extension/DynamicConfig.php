@@ -5,10 +5,9 @@ namespace AKlump\Drupal\PHPUnit\Integration\Runner\Extension;
 use AKlump\Drupal\PHPUnit\Integration\Helper\GetEnv;
 use AKlump\Drupal\PHPUnit\Integration\Helper\GetUserHelpForMissingSimpleTestDB;
 use AKlump\Drupal\PHPUnit\Integration\Helper\PutEnv;
+use AKlump\Drupal\PHPUnit\Integration\ThirdParty\DrushService;
 use AKlump\Drupal\PHPUnit\Integration\ThirdParty\GitService;
 use AKlump\Drupal\PHPUnit\Integration\ThirdParty\LandoService;
-use PHPUnit\Event\TestRunner\ExecutionStarted;
-use PHPUnit\Event\TestRunner\ExecutionStartedSubscriber;
 use PHPUnit\Runner\Extension\Extension;
 use PHPUnit\Runner\Extension\Facade;
 use PHPUnit\Runner\Extension\ParameterCollection;
@@ -45,27 +44,58 @@ final class DynamicConfig implements Extension {
    */
   private function getSimpletestDb(): string {
     $get_env = new GetEnv();
-    $value = $get_env('DATABASE_URL');
     $DRUPAL_ROOT = $get_env('DRUPAL_ROOT');
-    $branch_name = (new GitService($DRUPAL_ROOT))->getBranchName();
-    if ($branch_name) {
-      $branch_key = 'DATABASE_URL__' . strtoupper($branch_name);
-      $db_based_value = $get_env($branch_key);
-      $value = $db_based_value ?: $value;
+
+    // Respect a value the user has already configured, e.g. directly in
+    // phpunit.xml or their shell/CI environment. Without this, it would be
+    // silently overwritten below.
+    $value = $get_env('SIMPLETEST_DB');
+
+    if (!$value) {
+      $value = $get_env('DATABASE_URL');
+      $branch_name = (new GitService($DRUPAL_ROOT))->getBranchName();
+      if ($branch_name) {
+        $branch_key = 'DATABASE_URL__' . strtoupper($branch_name);
+        $db_based_value = $get_env($branch_key);
+        $value = $db_based_value ?: $value;
+      }
     }
     if (!$value
       && ($lando_info = LandoService::getLandoInfo())) {
       $value = (new LandoService($lando_info))->getDatabaseUrl();
     }
+    if (!$value
+      && ($sql_connect_output = DrushService::getSqlConnectOutput((string) $DRUPAL_ROOT))) {
+      $value = (new DrushService())->getDatabaseUrl($sql_connect_output);
+    }
 
     return strval($value);
   }
 
+  /**
+   * Get the value for SIMPLETEST_BASE_URL.
+   *
+   * @return string
+   *   The base URL of the site under test.
+   */
   private function getSimpletestBaseUrl(): string {
-    // TODO Solve for when no lando.
-    $lando_info = LandoService::getLandoInfo();
+    $get_env = new GetEnv();
+    // Respect a value the user has already configured, e.g. directly in
+    // phpunit.xml or their shell/CI environment, per the example given in
+    // phpunit.xml. Without this, it would be silently overwritten below.
+    $value = $get_env('SIMPLETEST_BASE_URL');
+    $DRUPAL_ROOT = $get_env('DRUPAL_ROOT');
 
-    return (new LandoService($lando_info))->getBaseUrl();
+    if (!$value
+      && ($lando_info = LandoService::getLandoInfo())) {
+      $value = (new LandoService($lando_info))->getBaseUrl();
+    }
+    if (!$value
+      && ($status_uri = DrushService::getStatusUri((string) $DRUPAL_ROOT))) {
+      $value = (new DrushService())->getBaseUrl($status_uri);
+    }
+
+    return strval($value);
   }
 
   /**
