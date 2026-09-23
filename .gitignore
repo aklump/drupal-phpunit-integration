@@ -4,3 +4,6 @@ vendor/
 .idea/
 composer.lock
 phpunit.xml
+
+# Riptide artifacts (cloud-synced)
+.humanlayer/tasks/
