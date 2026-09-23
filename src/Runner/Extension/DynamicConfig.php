@@ -5,7 +5,7 @@ namespace AKlump\Drupal\PHPUnit\Integration\Runner\Extension;
 use AKlump\Drupal\PHPUnit\Integration\Helper\GetEnv;
 use AKlump\Drupal\PHPUnit\Integration\Helper\GetUserHelpForMissingSimpleTestDB;
 use AKlump\Drupal\PHPUnit\Integration\Helper\PutEnv;
-use AKlump\Drupal\PHPUnit\Integration\ThirdParty\DrupalService;
+use AKlump\Drupal\PHPUnit\Integration\ThirdParty\DrushService;
 use AKlump\Drupal\PHPUnit\Integration\ThirdParty\GitService;
 use AKlump\Drupal\PHPUnit\Integration\ThirdParty\LandoService;
 use PHPUnit\Runner\BeforeFirstTestHook;
@@ -70,17 +70,43 @@ final class DynamicConfig implements BeforeFirstTestHook {
       $value = (new LandoService($lando_info))->getDatabaseUrl();
     }
 
-    // Finally, fallback to the database URL from the Drupal service.
-    $value = $value ?: (new DrupalService($DRUPAL_ROOT))->getDatabaseUrl();
+    // Finally, fallback to a database URL resolved via Drush.
+    if (!$value
+      && ($sql_connect_output = DrushService::getSqlConnectOutput((string) $DRUPAL_ROOT))) {
+      $value = (new DrushService())->getDatabaseUrl($sql_connect_output);
+    }
 
     return strval($value);
   }
 
+  /**
+   * Get the value for SIMPLETEST_BASE_URL.
+   *
+   * @return string
+   *   The base URL of the site under test.
+   */
   private function getSimpletestBaseUrl(): string {
-    // TODO Solve for when no lando.
-    $lando_info = LandoService::getLandoInfo();
+    $get_env = new GetEnv();
 
-    return (new LandoService($lando_info))->getBaseUrl();
+    // This will take first precedence, e.g. hard-coded in phpunit.xml or the
+    // shell/CI environment. Without this, it would be silently overwritten
+    // below.
+    $value = $get_env('SIMPLETEST_BASE_URL');
+    $DRUPAL_ROOT = $get_env('DRUPAL_ROOT');
+
+    // Or, if Lando is running, try to get the base URL from Lando.
+    if (!$value
+      && ($lando_info = LandoService::getLandoInfo())) {
+      $value = (new LandoService($lando_info))->getBaseUrl();
+    }
+
+    // Finally, fallback to a base URL resolved via Drush.
+    if (!$value
+      && ($status_uri = DrushService::getStatusUri((string) $DRUPAL_ROOT))) {
+      $value = (new DrushService())->getBaseUrl($status_uri);
+    }
+
+    return strval($value);
   }
 
   /**

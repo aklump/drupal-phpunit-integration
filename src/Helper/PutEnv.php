@@ -13,7 +13,7 @@ class PutEnv {
    * @return string The value of $value as passed to the method.
    */
   public function __invoke(string $key, string $value): string {
-    $_ENV['$key'] = $value;
+    $_ENV[$key] = $value;
     putenv($key . '=' . $value);
 
     return $value;
