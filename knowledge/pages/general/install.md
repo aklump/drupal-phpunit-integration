@@ -16,7 +16,7 @@ echo "/vendor/\n*/.cache\n/.phpunit.cache\n/reports/\n" > tests_phpunit/.gitigno
 
 ```shell
 echo '{"autoload":{"psr-4":{"\\\\AKlump\\\\Drupal\\\\PHPUnit\\\\Integration\\\\":"src"}},"repositories":[{"type":"github","url":"https://github.com/aklump/drupal-phpunit-integration"}]}' > tests_phpunit/composer.json
-(cd tests_phpunit && composer require aklump/drupal-phpunit-integration:^0)
+(cd tests_phpunit && composer require aklump/drupal-phpunit-integration:^10)
 ```
 
 ### Dev Version

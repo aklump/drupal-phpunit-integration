@@ -10,6 +10,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **Breaking:** the documented directory for Unit and Integration tests is now `tests/src/Unit/` and `tests/src/Integration/`, not `tests/Unit/` and `tests/Integration/`. The `src/` segment matters: Drupal core's own test runner (`vendor/bin/phpunit -c web/core`, drupal.org's GitLab CI) discovers `tests/src/Unit/` automatically, with no bootstrap and no trace of this package, the same way it already discovers Kernel and Functional tests — the old path was invisible to it for no technical reason. Existing projects should move their `tests/Unit/` and `tests/Integration/` directories (and the matching `autoload-dev` PSR-4 path and `<testsuite><directory>` entries in `phpunit.xml`) to `tests/src/Unit/` and `tests/src/Integration/`.
+
 ## [10.2.1] - 2026-10-04
 
 ### Added
