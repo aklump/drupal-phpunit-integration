@@ -47,11 +47,7 @@ bin/run-phpunit-tests.sh --flush
 
 ### Installer script
 
-The Quick Start command is the supported install. It refuses to run if `tests_phpunit/` already exists. By default it requires the `@dev` version of the package; set `VERSION` to choose another constraint, for example the 9.x line for PHPUnit 9:
-
-```shell
-export VERSION=^9;curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
-```
+The Quick Start command is the supported install. It refuses to run if `tests_phpunit/` already exists. By default it requires the `dev-main` version of the package. Set `VERSION` to choose another constraint that ships `bin/install.php`. The 9.x line (PHPUnit 9) has no installer and fails with an explanatory error; install it manually.
 
 ### Should `tests_phpunit/composer.lock` be committed?
 
