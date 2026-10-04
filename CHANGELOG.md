@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.2.1] - 2026-10-04
+
+### Fixed
+
+- The installer resolved the default `@dev` version to the `9.x-dev` branch, which has no `bin/install.php`, and then failed without making the failure obvious. The default is now `dev-main`.
+- The installer now stops with a prominent failure banner and fix instructions on every error.
+- The installer wrote literal `\n` characters into `tests_phpunit/.gitignore` and called an undefined `error_exit`.
+
+### Removed
+
+- The `VERSION=^9` installer example; the 9.x line has no installer and must be installed manually.
+
 ## [10.0.0] - 2025-11-27
   
 ### Changed
