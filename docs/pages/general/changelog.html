@@ -45,6 +45,17 @@
       <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
 and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<h2>[10.2.1] - 2026-10-04</h2>
+<h3>Fixed</h3>
+<ul>
+<li>The installer resolved the default <code>@dev</code> version to the <code>9.x-dev</code> branch, which has no <code>bin/install.php</code>, and then failed without making the failure obvious. The default is now <code>dev-main</code>.</li>
+<li>The installer now stops with a prominent failure banner and fix instructions on every error.</li>
+<li>The installer wrote literal <code>\n</code> characters into <code>tests_phpunit/.gitignore</code> and called an undefined <code>error_exit</code>.</li>
+</ul>
+<h3>Removed</h3>
+<ul>
+<li>The <code>VERSION=^9</code> installer example; the 9.x line has no installer and must be installed manually.</li>
+</ul>
 <h2>[10.0.0] - 2025-11-27</h2>
 <h3>Changed</h3>
 <ul>
@@ -127,7 +138,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
               Version:
         <strong>10.1.1</strong>
         &bull;
-                    Last Update: <strong>9/22/2026</strong>
+                    Last Update: <strong>10/4/2026</strong>
           </div>
   </footer>
 

@@ -69,9 +69,7 @@ Installation completed successfully!
 </ul>
 <h2>Installation</h2>
 <h3>Installer script</h3>
-<p>The Quick Start command is the supported install. It refuses to run if <code>tests_phpunit/</code> already exists. By default it requires the <code>@dev</code> version of the package; set <code>VERSION</code> to choose another constraint, for example the 9.x line for PHPUnit 9:</p>
-<pre><code class="shell">export VERSION=^9;curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
-</code></pre>
+<p>The Quick Start command is the supported install. It refuses to run if <code>tests_phpunit/</code> already exists. By default it requires the <code>dev-main</code> version of the package. Set <code>VERSION</code> to choose another constraint that ships <code>bin/install.php</code>. The 9.x line (PHPUnit 9) has no installer and fails with an explanatory error; install it manually.</p>
 <h3>Should <code>tests_phpunit/composer.lock</code> be committed?</h3>
 <p>That is up to you, but committing it keeps your test dependencies stable when they are reinstalled.</p>
 <h3>Updating</h3>
@@ -192,7 +190,7 @@ final class FooTest extends \PHPUnit\Framework\TestCase {
               Version:
         <strong>10.1.1</strong>
         &bull;
-                    Last Update: <strong>9/22/2026</strong>
+                    Last Update: <strong>10/4/2026</strong>
           </div>
   </footer>
 
