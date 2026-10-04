@@ -1,5 +1,6 @@
 create_tags: patch
 do_version_commit: true
+main: main
 patch_prefix: .
 preserve_patch_zero: true
 push_tags: true
