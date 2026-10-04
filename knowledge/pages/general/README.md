@@ -71,6 +71,12 @@ The generated `phpunit.xml` and `bin/run-phpunit-tests.sh` are pointed at the lo
 
 Set `DRUPAL_PHPUNIT_INTEGRATION_VERSION` to the 9.x line, as in the example above. The installer always runs the current `bin/install.php` from `main`, so the result is the same as a normal install.
 
+```shell
+curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.php \
+  | DRUPAL_PHPUNIT_INTEGRATION_VERSION='^9' \
+    php
+```
+
 ### Should `tests_phpunit/composer.lock` be committed?
 
 That is up to you, but committing it keeps your test dependencies stable when they are reinstalled.
