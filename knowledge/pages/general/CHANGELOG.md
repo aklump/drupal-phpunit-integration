@@ -12,15 +12,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [10.2.1] - 2026-10-04
 
+### Added
+
+- `DRUPAL_PHPUNIT_INTEGRATION_VERSION='^9'` now installs the 9.x line.
+- The install path and the Drupal core path are configurable with `DRUPAL_PHPUNIT_INTEGRATION_INSTALL_PATH` and `DRUPAL_PHPUNIT_INTEGRATION_DRUPAL_CORE`; the generated `phpunit.xml` and runner follow them.
+
+### Changed
+
+- **Breaking:** install with `curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.php | php` (was `install.sh | bash`).
+- All installer logic now lives in `bin/install.php`, which bootstraps `tests_phpunit/`, requires the package and configures it. `bin/install.sh` is removed.
+- PHPUnit 11 is now configured the same way as PHPUnit 10.
+
 ### Fixed
 
 - The installer resolved the default `@dev` version to the `9.x-dev` branch, which has no `bin/install.php`, and then failed without making the failure obvious. The default is now `dev-main`.
 - The installer now stops with a prominent failure banner and fix instructions on every error.
 - The installer wrote literal `\n` characters into `tests_phpunit/.gitignore` and called an undefined `error_exit`.
-
-### Removed
-
-- The `VERSION=^9` installer example; the 9.x line has no installer and must be installed manually.
+- The installer exited with "Runner script not found" at its last step because it looked for `init/run_*.sh` and the runner is `init/run-phpunit-tests.sh`.
 
 ## [10.0.0] - 2025-11-27
   
