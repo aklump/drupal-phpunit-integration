@@ -49,7 +49,7 @@
 <p>Drupal's own test types sit at two extremes: <code>UnitTestCase</code> still pulls in Drupal's test base classes, and kernel and functional tests need a database and a bootstrapped site. Much custom module code falls in between: it uses Drupal interfaces and classes, but its logic can be tested with plain PHPUnit and a few mocks. This package gives that code a home. It installs a separate PHPUnit project in <code>tests_phpunit/</code> next to your Drupal site, autoloads Drupal core and your modules' <code>autoload-dev</code> namespaces from a cache that is built once and reused, and gives you a runner script, <code>bin/run-phpunit-tests.sh</code>, that points PHPUnit at the right configuration from anywhere in the project. When your tests do need Drupal's database, it fills in <code>SIMPLETEST_DB</code> and <code>SIMPLETEST_BASE_URL</code> for you from your environment, Lando or Drush.</p>
 <h2>Quick Start</h2>
 <p>From the root of a Composer-based Drupal project (the directory that contains <code>web/core</code>):</p>
-<pre><code class="shell">curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.sh | bash -s --
+<pre><code class="shell">curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.php | php
 </code></pre>
 <p>The installer creates <code>tests_phpunit/</code>, requires this package into it, adds <code>drupal/core-dev</code> to your project if it is missing, copies Drupal core's <code>phpunit.xml.dist</code> to <code>tests_phpunit/phpunit.xml</code> and copies the runner to <code>bin/run-phpunit-tests.sh</code>. It ends with:</p>
 <pre><code class="text">## Final step
@@ -63,13 +63,33 @@ Installation completed successfully!
 </code></pre>
 <h2>Requirements</h2>
 <ul>
-<li>A Composer-based Drupal site whose webroot is <code>web/</code>; the installer stops with <code>Error: Drupal not found at web/core/scripts/drupal</code> otherwise.</li>
+<li>A Composer-based Drupal site whose webroot is <code>web/</code>; the installer stops with a failure banner (<code>Drupal not found at web/core</code>) otherwise, unless you set <code>DRUPAL_PHPUNIT_INTEGRATION_DRUPAL_CORE</code>.</li>
 <li><code>drupal/core-dev</code> at the same major and minor version as <code>drupal/core</code>. The installer tries to add it for you.</li>
 <li>Composer, and a PHP version supported by PHPUnit 10.5 or 11, which this package requires. For PHPUnit 9, install the 9.x line (see below).</li>
 </ul>
 <h2>Installation</h2>
 <h3>Installer script</h3>
-<p>The Quick Start command is the supported install. It refuses to run if <code>tests_phpunit/</code> already exists. By default it requires the <code>dev-main</code> version of the package. Set <code>VERSION</code> to choose another constraint that ships <code>bin/install.php</code>. The 9.x line (PHPUnit 9) has no installer and fails with an explanatory error; install it manually.</p>
+<p>The Quick Start command is the supported install. It refuses to run if the install path already exists. Three settings are optional environment variables. Set them on the <code>php</code> side of the pipe, not before <code>curl</code>:</p>
+<table class="table">
+<thead>
+<tr><th>Variable</th><th>Default</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>DRUPAL_PHPUNIT_INTEGRATION_VERSION</code></td><td><code>dev-main</code></td><td>The Composer constraint for this package, e.g. <code>^9</code> for PHPUnit 9</td></tr>
+<tr><td><code>DRUPAL_PHPUNIT_INTEGRATION_INSTALL_PATH</code></td><td><code>tests_phpunit</code></td><td>Where to install; absolute, or relative to the directory you run it from</td></tr>
+<tr><td><code>DRUPAL_PHPUNIT_INTEGRATION_DRUPAL_CORE</code></td><td><code>web/core</code></td><td>Where Drupal core is; absolute, or relative to the directory you run it from</td></tr>
+</tbody>
+</table>
+<p>For example, to install the 9.x line into <code>qa/phpunit</code> on a site whose webroot is <code>docroot/</code>:</p>
+<pre><code class="shell">curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.php \
+  | DRUPAL_PHPUNIT_INTEGRATION_VERSION='^9' \
+    DRUPAL_PHPUNIT_INTEGRATION_INSTALL_PATH=qa/phpunit \
+    DRUPAL_PHPUNIT_INTEGRATION_DRUPAL_CORE=docroot/core \
+    php
+</code></pre>
+<p>The generated <code>phpunit.xml</code> and <code>bin/run-phpunit-tests.sh</code> are pointed at the locations you choose. The rest of this documentation assumes the defaults.</p>
+<h3>Installing 9.x (PHPUnit 9)</h3>
+<p>Set <code>DRUPAL_PHPUNIT_INTEGRATION_VERSION</code> to the 9.x line, as in the example above. The installer always runs the current <code>bin/install.php</code> from <code>main</code>, so the result is the same as a normal install.</p>
 <h3>Should <code>tests_phpunit/composer.lock</code> be committed?</h3>
 <p>That is up to you, but committing it keeps your test dependencies stable when they are reinstalled.</p>
 <h3>Updating</h3>
