@@ -33,7 +33,7 @@
       </div>
       <div class="header__tags me-3">  </div>
       <div class="header__page-numbers flex-shrink-1">5
-        / 8</div>
+        / 9</div>
     </div>
   </div>
 </header>
@@ -45,6 +45,13 @@
       <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
 and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<h2>[Unreleased]</h2>
+<h2>[10.2.2] - 2026-10-21</h2>
+<h3>Changed</h3>
+<ul>
+<li><strong>Breaking:</strong> the documented directory for Unit and Integration tests is now <code>tests/src/Unit/</code> and <code>tests/src/Integration/</code>, not <code>tests/Unit/</code> and <code>tests/Integration/</code>. The <code>src/</code> segment matters: Drupal core's own test runner (<code>vendor/bin/phpunit -c web/core</code>, drupal.org's GitLab CI) discovers <code>tests/src/Unit/</code> automatically, with no bootstrap and no trace of this package, the same way it already discovers Kernel and Functional tests — the old path was invisible to it for no technical reason. Existing projects should move their <code>tests/Unit/</code> and <code>tests/Integration/</code> directories (and the matching <code>autoload-dev</code> PSR-4 path and <code>&lt;testsuite&gt;&lt;directory&gt;</code> entries in <code>phpunit.xml</code>) to <code>tests/src/Unit/</code> and <code>tests/src/Integration/</code>.</li>
+<li><em>init/run-phpunit-tests.sh</em> now flushes the autoload map cache automatically when a module is added, removed, moved or re-symlinked, instead of failing with <code>Class "..." not found</code> until <code>--flush</code> is run. It compares directory mtimes to the cache file using bash builtins only (no added run time), so only <em>modules</em>, <em>themes</em>, <em>profiles</em> and their direct subdirectories (e.g. <em>contrib</em>, <em>custom</em>) are watched; a module nested deeper still needs <code>--flush</code>. Copy the new block into your copy of the runner.</li>
+</ul>
 <h2>[10.2.1] - 2026-10-04</h2>
 <h3>Added</h3>
 <ul>
@@ -146,7 +153,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
               Version:
         <strong>10.2.1</strong>
         &bull;
-                    Last Update: <strong>10/4/2026</strong>
+                    Last Update: <strong>10/21/2026</strong>
           </div>
   </footer>
 
@@ -220,7 +227,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
     </li>
   
                                     <li data-page="why" value="4">
-      <a class="js-page-link" href="why.html">Why do you Need This?<span
+      <a class="js-page-link" href="why.html">Why Do You Need This?<span
               class="js-search-score
               badge
               bg-info rounded-pill badge-sm"></span></a>
@@ -240,14 +247,21 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
               bg-info rounded-pill badge-sm"></span></a>
     </li>
   
-                                                          <li data-page="developers" value="7">
+                                    <li data-page="conventional_vs_this_way" value="7">
+      <a class="js-page-link" href="conventional_vs_this_way.html">The Conventional Way, Then This Package's Way<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                                          <li data-page="developers" value="8">
       <a class="js-page-link" href="../dev/developers.html">Developer Notes<span
               class="js-search-score
               badge
               bg-info rounded-pill badge-sm"></span></a>
     </li>
   
-                                    <li data-page="composer_autoload_dev" value="8">
+                                    <li data-page="composer_autoload_dev" value="9">
       <a class="js-page-link" href="../dev/composer_autoload_dev.html">Composer Autoload Dev<span
               class="js-search-score
               badge
@@ -273,7 +287,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
     </li>
   
                                 <li data-page="why" value="4">
-      <a class="js-page-link" href="why.html">Why do you Need This?</a>
+      <a class="js-page-link" href="why.html">Why Do You Need This?</a>
     </li>
   
                                 <li data-page="changelog" value="5">
@@ -284,14 +298,18 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
       <a class="js-page-link" href="readme.html">drupal-phpunit-integration</a>
     </li>
   
+                                <li data-page="conventional_vs_this_way" value="7">
+      <a class="js-page-link" href="conventional_vs_this_way.html">The Conventional Way, Then This Package's Way</a>
+    </li>
+  
                   </ol>
               <h2 class="h4 mt-4">Dev</h2>
         <ol>
-                                <li data-page="developers" value="7">
+                                <li data-page="developers" value="8">
       <a class="js-page-link" href="../dev/developers.html">Developer Notes</a>
     </li>
   
-                                <li data-page="composer_autoload_dev" value="8">
+                                <li data-page="composer_autoload_dev" value="9">
       <a class="js-page-link" href="../dev/composer_autoload_dev.html">Composer Autoload Dev</a>
     </li>
   
@@ -320,11 +338,13 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
                                                 <a class="list-group-item list-group-item-action"
                  data-tags="[]" href="troubleshooting.html">Error: Drupal requires Prophecy PhpUnit when using PHPUnit 9 or greater.</a>
                                                 <a class="list-group-item list-group-item-action"
-                 data-tags="[]" href="why.html">Why do you Need This?</a>
+                 data-tags="[]" href="why.html">Why Do You Need This?</a>
                                                 <a class="list-group-item list-group-item-action"
                  data-tags="[]" href="changelog.html">Changelog</a>
                                                 <a class="list-group-item list-group-item-action"
                  data-tags="[]" href="readme.html">drupal-phpunit-integration</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="conventional_vs_this_way.html">The Conventional Way, Then This Package&#039;s Way</a>
                                                 <a class="list-group-item list-group-item-action"
                  data-tags="[]" href="../dev/developers.html">Developer Notes</a>
                                                 <a class="list-group-item list-group-item-action"

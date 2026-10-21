@@ -11,6 +11,7 @@ chapters:
       - why
       - changelog
       - readme
+      - conventional_vs_this_way
   -
     id: dev
     title: Dev

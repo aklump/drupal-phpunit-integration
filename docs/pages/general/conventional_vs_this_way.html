@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en" data-knowledge-id="cd0f10da-3492-4622-b736-a20b6c618881">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=10.2.1">
+      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=10.2.1">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=10.2.1">
+        <title>The Conventional Way, Then This Package&#039;s Way | Book</title>
+  </head>
+<body class="my-5">
+
+<header class="header bg-light fixed-top p-2 pt-1">
+  <div class="container-md">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="header__breadcrumbs flex-shrink-0 flex-grow-1 me-3">
+        <nav aria-label="breadcrumb">
+  <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+      <a class="fw-bold" href="../../index.html">Book</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a class="fw-bold" href="#" data-bs-toggle="offcanvas"
+         data-bs-target="#table-of-contents"
+         aria-controls="table-of-contents">TOC</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="install.html">General</a></li>
+  </ol>
+</nav>
+
+      </div>
+      <div class="header__tags me-3">  </div>
+      <div class="header__page-numbers flex-shrink-1">7
+        / 9</div>
+    </div>
+  </div>
+</header>
+
+<main class="container-md flex-column">
+  <div class="row mb-5 pt-5">
+    <article class="col">
+      <h1 class="mb-4 text-primary">The Conventional Way, Then This Package&#039;s Way</h1>
+      <p><a href="why.html">Why Do You Need This?</a> makes the argument in prose. This page makes it in commands: the fully conventional way to run a Drupal module's tests with nothing but core itself, then exactly what this package changes (and doesn't) on top of it.</p>
+<h2>The conventional way</h2>
+<p>This is the entire contract Drupal core itself defines for Kernel and Functional tests. Nothing below is specific to any package, including this one.</p>
+<h3>1. Install <code>drupal/core-dev</code></h3>
+<pre><code class="shell">composer require --dev drupal/core-dev:^10
+</code></pre>
+<p>This is the one Composer dependency the convention needs. It provides <code>vendor/bin/phpunit</code> and every Drupal test base class (<code>KernelTestBase</code>, <code>BrowserTestBase</code>, <code>UnitTestCase</code>, …).</p>
+<h3>2. Write tests under the standard directories</h3>
+<pre><code>web/modules/custom/my_module/
+└── tests/
+    └── src/
+        ├── Kernel/
+        │   └── FooTest.php        namespace Drupal\Tests\my_module\Kernel
+        └── Functional/
+            └── BarTest.php        namespace Drupal\Tests\my_module\Functional
+</code></pre>
+<p>That's the whole registration step. There is no <code>phpunit.xml</code> entry to add, no composer.json autoload-dev block for a test to be discovered. Core finds it because of where it lives and what its namespace says, not because anything was told to look for it.</p>
+<h3>3. Export two environment variables, yourself, before running</h3>
+<pre><code class="shell">export SIMPLETEST_DB="mysql://user:pass@host:3306/my_database"
+export SIMPLETEST_BASE_URL="http://my-site.local/"
+</code></pre>
+<h3>4. Run core's own <code>phpunit.xml.dist</code> directly</h3>
+<pre><code class="shell">vendor/bin/phpunit -c web/core --testsuite=kernel,functional --group my_module
+</code></pre>
+<p><code>-c web/core</code> points PHPUnit at <code>core/phpunit.xml.dist</code>, which is the actual, canonical configuration — the one drupal.org's own GitLab CI template uses under the hood, and the one every other Drupal developer's machine can run unmodified.</p>
+<h3>Why step 2 needs no registration: a look under the hood</h3>
+<p><code>core/phpunit.xml.dist</code>'s <code>kernel</code> testsuite doesn't list directories — it delegates to a small PHP class:</p>
+<pre><code class="xml">&lt;testsuite name="kernel"&gt;
+  &lt;file&gt;./tests/TestSuites/KernelTestSuite.php&lt;/file&gt;
+&lt;/testsuite&gt;
+</code></pre>
+<pre><code class="php">// core/tests/TestSuites/KernelTestSuite.php
+public static function suite() {
+  $root = dirname(__DIR__, 3);
+  $suite = new static('kernel');
+  $suite-&gt;addTestsBySuiteNamespace($root, 'Kernel');
+  return $suite;
+}
+</code></pre>
+<p><code>addTestsBySuiteNamespace()</code> walks the <em>entire</em> Drupal root — core, contrib, custom, all of it — looking for any <code>tests/src/Kernel</code> directory and adds every test it finds. <code>FunctionalTestSuite</code> does the identical thing for <code>tests/src/Functional</code>, and <code>UnitTestSuite</code> the identical thing for <code>tests/src/Unit</code>. This is why a module never registers its own tests anywhere: the convention is the directory and the namespace, nothing else. The exact discovery line, traced into <code>TestSuiteBase::addTestsBySuiteNamespace()</code>, is hardcoded:</p>
+<pre><code class="php">// core/tests/TestSuites/TestSuiteBase.php
+$test_path = "$dir/tests/src/$suite_namespace";
+</code></pre>
+<p>There is no alternate path. A test file has to physically live at <code>&lt;module&gt;/tests/src/&lt;SuiteNamespace&gt;/...</code> or core's discovery will never see it — not "won't autoload it," won't even attempt to include it in the run. Autoloadable and discoverable are two different mechanisms, and this is the only one that decides what PHPUnit runs.</p>
+<p>(This particular discovery class is deprecated as of Drupal 10.3 and removed in 11.0 — PHPUnit 10 does test discovery differently — but the contract it implements, "directory and namespace is the registration," is expected to survive the mechanism change. See https://www.drupal.org/node/3405829.)</p>
+<h3>What the conventional way <em>can't</em> see: a module's own <code>autoload-dev</code></h3>
+<p>The directory convention above is the only registration that exists. <code>core/tests/bootstrap.php</code> is the actual code that wires up the autoloader for a test run, and it does this per extension, with nothing configurable:</p>
+<pre><code class="php">// core/tests/bootstrap.php, drupal_phpunit_get_extension_namespaces()
+if (is_dir($dir . '/src')) {
+  $namespaces['Drupal\\' . $extension . '\\'][] = $dir . '/src';
+}
+if (is_dir($dir . '/tests/src')) {
+  $namespaces['Drupal\\Tests\\' . $extension . '\\'][] = $dir . '/tests/src';
+}
+</code></pre>
+<p>That's the entire autoloading contract for every extension, core or contrib: exactly two fixed namespaces, derived purely from two fixed directory names. This function never opens a module's <code>composer.json</code> — not its <code>autoload</code> key, not its <code>autoload-dev</code> key. If a module wants a shared test trait or helper class living somewhere other than <code>Drupal\Tests\&lt;module&gt;\</code> under <code>tests/src/</code> — say, a trait meant to be reused by <em>other</em> modules' tests, declared via its own <code>autoload-dev</code> — the conventional path has no mechanism to find it, full stop.</p>
+<p>It's not only that bootstrap.php declines to look: Composer itself wouldn't honor that declaration either way. Composer's own schema documentation marks the <code>autoload-dev</code> key <code>[root-only]</code> — it is only ever processed for the project's own root <code>composer.json</code>, and is explicitly ignored in every dependency package, your custom module included. Two independent reasons, same result: a module-level <code>autoload-dev</code> is invisible to the conventional path.</p>
+<p>This package's <code>AutoloadDev</code> class exists specifically to undo that: for each directory your <code>phpunit.xml</code> lists in a <code>&lt;testsuite&gt;</code>, it walks up to the nearest <code>composer.json</code> and merges that package's own <code>autoload-dev</code> into the cached PSR-4 map — the one case in this whole comparison where this package does something the conventional way has no equivalent for at all, rather than just automating it. See <a href="../dev/composer_autoload_dev.html">Composer Autoload Dev</a>.</p>
+<h2>Proof this really is the entire contract</h2>
+<p>The exact test files this package would normally run for <code>auto_retina</code> were pointed at core's own <code>phpunit.xml.dist</code>, with the two variables above exported by hand and this package nowhere in the invocation or the module's own <code>composer.json</code>:</p>
+<pre><code class="shell">export SIMPLETEST_DB="mysql://drupal10:drupal10@database:3306/drupal10"
+export SIMPLETEST_BASE_URL="http://drupal10.local.loft/"
+vendor/bin/phpunit -c web/core --testsuite=kernel,functional --group auto_retina --testdox
+</code></pre>
+<pre><code>OK (18 tests, 39 assertions)
+</code></pre>
+<p>No module-specific configuration beyond those two lines. That's the baseline this package has to earn its place against.</p>
+<h2>Where the conventional way costs you, every day</h2>
+<ol>
+<li><strong>Discovery re-scans the whole codebase on every invocation.</strong> There is no cache; core can't assume what changed since last time, so it doesn't try.</li>
+<li><strong>You personally re-derive two values, every session, on every machine.</strong> Not because core is wrong to ask for them — it has no way to know your local database or site URL — but because nothing computes them for you.</li>
+</ol>
+<h2>This package's way: the same contract, made fast and automatic</h2>
+<p>Everything in "The conventional way" above is still exactly true when this package is installed. Nothing about writing a Kernel or Functional test changes. What changes is who pays the two costs above, and when:</p>
+<table class="table">
+<thead>
+<tr><th></th><th>Conventional</th><th>This package</th></tr>
+</thead>
+<tbody>
+<tr><td>Test discovery</td><td>Full codebase scan, every run</td><td>Scanned once, cached to a file, rescanned only on <code>--flush</code> (<code>BootstrapCache</code>)</td></tr>
+<tr><td><code>SIMPLETEST_DB</code></td><td>You export it, by hand, every session</td><td>Resolved automatically — your own exported value first, then your git branch's own <code>DATABASE_URL</code>, then plain <code>DATABASE_URL</code>, then Lando, then <code>drush sql:connect</code> (<code>DynamicConfig</code>)</td></tr>
+<tr><td><code>SIMPLETEST_BASE_URL</code></td><td>You export it, by hand, every session</td><td>Resolved automatically — your own value first, then Lando, then Drush's site URI (<code>DynamicConfig</code>)</td></tr>
+<tr><td>How the values reach a Kernel/Functional test</td><td>A real process environment variable (<code>export</code>), inherited by the subprocess PHPUnit forks for every test</td><td><code>putenv()</code> — a real process environment variable, for the same reason: see <a href="why.html">Why Do You Need This?</a> on <code>runTestInSeparateProcess</code></td></tr>
+<tr><td>Command</td><td><code>vendor/bin/phpunit -c web/core --testsuite=kernel,functional --group my_module</code></td><td><code>bin/run-phpunit-tests.sh</code></td></tr>
+<tr><td>Test discovery registration (Kernel/Functional)</td><td>None — directory and namespace only</td><td>None — directory and namespace only, unchanged</td></tr>
+<tr><td>A module's own <code>autoload-dev</code> namespaces</td><td><strong>Never loaded.</strong> <code>bootstrap.php</code> only wires up two fixed namespaces by directory name; it never reads any module's <code>composer.json</code>. Composer itself wouldn't honor it either way — <code>autoload-dev</code> is root-only.</td><td>Scanned and merged into the cached PSR-4 map automatically (<code>AutoloadDev</code>, rebuilt on <code>--flush</code>) — no equivalent to "automate," since none exists conventionally</td></tr>
+</tbody>
+</table>
+<p>The "Test discovery registration" row is the one that matters most for trusting this package: for Kernel and Functional tests, it adds <strong>zero</strong> new registration steps on top of the conventional ones. A module's Kernel/Functional tests written against this package are the same tests, in the same place, with the same namespace, that core's own <code>phpunit.xml.dist</code> would find on its own.</p>
+<p>The <code>autoload-dev</code> row is the one exception to that pattern — it isn't automating an existing conventional step, because no such step exists. That's also true of one more thing the table above doesn't attempt to capture: <strong>Unit</strong> and <strong>Integration</strong> tests that use Drupal classes with no bootstrap at all. Neither of those two is "the same contract, made faster" — there is no core contract for either one to accelerate. See <a href="why.html">Why Do You Need This?</a> for that half of the story.</p>
+<h2>A fixed foot-gun: Unit tests now live where core already looks</h2>
+<p>Core's "Unit" discovery works exactly like Kernel and Functional, down to the same hardcoded line: <code>$test_path = "$dir/tests/src/Unit"</code>. A plain <code>PHPUnit\Framework\TestCase</code> with zero Drupal dependency, placed at <code>tests/src/Unit/FooTest.php</code> with namespace <code>Drupal\Tests\my_module\Unit</code>, is already discovered and run by core's own <code>phpunit.xml.dist</code>, with no bootstrap, no database, and no package of any kind installed. Core already has exactly the "boots nothing" Unit test type this package also offers.</p>
+<p>This package's documentation used to place that same test type at <code>tests/Unit/FooTest.php</code> instead — one directory shallower, missing the <code>src/</code> segment core's discovery requires. That one missing path segment was enough to make the file permanently invisible to <code>vendor/bin/phpunit -c web/core</code>, <code>core/scripts/run-tests.sh</code>, and drupal.org's GitLab CI template, for a test type that had no technical reason to diverge from the conventional path at all. It was never autoloading that broke — <code>AutoloadDev</code> or a plain <code>autoload-dev</code> entry can make the class loadable either way — it was discovery, which checks the literal directory string and nothing else.</p>
+<p>That's fixed now: both flavors live under <code>tests/src/</code>, the same root core itself uses:</p>
+<pre><code>web/modules/custom/alpha/tests/src/Unit/FooTest.php
+web/modules/custom/alpha/tests/src/Integration/FooTest.php
+</code></pre>
+<p><strong>Integration tests remain a different story, and were never a flaw in the same sense.</strong> "Integration" is not a suite core defines at all — <code>UnitTestSuite</code>, <code>KernelTestSuite</code>, and <code>FunctionalTestSuite</code> are the only three for an extension's own tests, with no fourth for a no-bootstrap-but-uses-Drupal-classes flavor. Since there is no conventional "integration" suite to fall back to, <code>tests/src/Integration/</code> costs nothing <code>tests/Integration/</code> didn't already lack — drupal.org's CI template was never going to run an "integration" suite either way, directory or no directory. It moved to <code>tests/src/</code> anyway, for one consistent rule rather than two.</p>
+<h2>A test-only dependency, and the two different "root"s that matter</h2>
+<p>Fixing the directory only solves <em>discovery</em>. A Unit or Integration test that needs a third-party class — Mockery, Faker, anything beyond Drupal core itself — has a second, separate question: <em>which</em> <code>composer.json</code> actually has to declare it for the class to be installed anywhere at all.</p>
+<p>A contrib module has no site of its own, so "add it to the site's root <code>composer.json</code>" — the obvious-looking answer by analogy with everything else in this comparison — doesn't even apply: there is no root the module's author controls. The real answer turns out to depend on which of two genuinely different "conventional" paths is running the test, and they disagree.</p>
+<p><strong>drupal.org's actual GitLab CI already solves this, by merging your module's manifest into its own.</strong> The template's <code>scripts/expand_composer_json.php</code> builds the scaffold site it tests your module against by deep-merging <em>your module's own</em> <code>composer.json</code> — <code>require</code>, <code>require-dev</code>, everything — into the generated manifest, before running <code>composer install</code> against the result. A dependency you declare in your own module's <code>require-dev</code> is not a dependency of some separate root the CI owns; it becomes part of the root CI builds, by design. For drupal.org's real pipeline, your module's own <code>require-dev</code> is exactly the right, fully-supported place for a test-only package. (Verified against the live script at <code>git.drupalcode.org/project/gitlab_templates</code>, not inferred from Composer's general root-only rule — that rule is real, but this template works around it deliberately.)</p>
+<p><strong>This package's own local runner does not do the same merge, and that's the actual gap.</strong> <code>bin/run-phpunit-tests.sh</code> runs <code>tests_phpunit/vendor/bin/phpunit</code>, against <code>tests_phpunit/</code>'s own, separate Composer project. <code>AutoloadDev</code> merges a module's <code>autoload-dev</code> <em>namespace map</em> into that project's autoloader, but nothing merges the module's <code>require-dev</code> <em>packages</em> into <code>tests_phpunit/composer.json</code> the way <code>expand_composer_json.php</code> does for the scaffold. A package declared only in your module's own <code>require-dev</code> is therefore exactly backwards from what the directory-convention fix addressed: it's discoverable and correctly placed, installed and working under drupal.org's real CI, and yet absent locally under this package's own runner — the opposite failure direction, and arguably the more dangerous one, since it means a maintainer can see green in CI and "class not found" on their own machine, or the reverse, depending on which vendor happens to hold the class that day.</p>
+<p><strong>The fix is a code change, not a rule, and it isn't built yet.</strong> Making local and CI agree means this package's own bootstrap should do what <code>expand_composer_json.php</code> already proves works: read the tested module's own <code>require-dev</code>, and actually install those packages into (or alongside) <code>tests_phpunit/vendor</code>, not just map their namespaces. Until that exists, a module-level <code>require-dev</code> test dependency is genuinely unsafe to rely on with this package's local runner, even though it's the correct and fully portable choice for drupal.org's own CI.</p>
+<h2>What this means for you</h2>
+<ul>
+<li>Nothing about how you <em>write</em> a Kernel or Functional test changes. The same file runs, unmodified, through <code>vendor/bin/phpunit -c web/core</code> with hand-exported variables, through <code>bin/run-phpunit-tests.sh</code> with this package installed, and through drupal.org's GitLab CI template.</li>
+<li>A Unit test written at <code>tests/src/Unit/</code> gets the same dual portability for free, as long as it doesn't lean on a third-party dependency — if it does, today, only drupal.org's real CI is guaranteed to have it; this package's local runner is not, until it gains its own equivalent of <code>expand_composer_json.php</code>.</li>
+<li>An Integration test has no conventional path to fall back to either way, so its directory choice doesn't cost portability it could otherwise have had.</li>
+<li>If this package were deleted from a project tonight, every Kernel, Functional, and Unit test would still run tomorrow — slower, and only after you export two variables by hand again — provided none of them depend on a third-party package only this package's own <code>tests_phpunit/</code> ever installed. That's the whole bet this package makes: it should always be safe to fall back to the row on the left.</li>
+</ul>
+<h2>Related topics</h2>
+<ul>
+<li><a href="why.html">Why Do You Need This?</a></li>
+<li><a href="../dev/composer_autoload_dev.html">Composer Autoload Dev</a></li>
+</ul>
+    </article>
+  </div>
+</main>
+
+  <footer class="footer d-flex justify-content-center">
+    <div class="flex-column justify-content-center">
+              Version:
+        <strong>10.2.1</strong>
+        &bull;
+                    Last Update: <strong>10/21/2026</strong>
+          </div>
+  </footer>
+
+
+<nav class="nav d-flex justify-content-center align-items-center
+  fixed-bottom">
+  <div class="btn-group flex-fill">
+              <a href="install.html" class="btn nav__prev-chapter btn-secondary"><i class="bi
+      bi-caret-left-fill"></i> Install</a>
+  
+    
+              <a href="readme.html" class="btn nav__prev-page js-nav__prev-page
+    btn-primary"><i class="bi
+      bi-caret-left-fill"></i></a>
+  
+    
+    <a class="nav__toc btn btn-light" href="#"
+       data-bs-toggle="offcanvas"
+       data-bs-target="#table-of-contents"
+       aria-controls="table-of-contents"><i class="bi
+           bi-list-ol"></i></a>
+    
+              <a href="../dev/developers.html" class="btn nav__next-page js-nav__next-page
+    btn-primary"><i class="bi bi-file-earmark"></i> Developer Notes <i class="bi
+       bi-caret-right-fill"></i></a>
+  
+    
+              <span class="btn nav__next-chapter btn-secondary "></span>
+  
+  </div>
+</nav>
+
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="table-of-contents"
+     aria-labelledby="table-of-contents__title" data-bs-keyboard="true">
+  <div class="offcanvas-header">
+    <h1 class="h6 offcanvas-title js-chapter-list-title"
+        id="table-of-contents__title">All
+      Chapters
+      &amp; Pages</h1>
+    <h1 class="d-none h6 offcanvas-title js-search-results-title"
+        id="table-of-contents__title">Search Results</h1>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+          <input class="js-search form-control mb-4" type="search"
+             placeholder="Search docs..."
+             aria-label="Search">
+      <div class="js-search-results d-none">
+        <h2 class="h4 mt-4">Matched Pages</h2>
+        <ol class="list-unstyled">
+                                              <li data-page="install" value="1">
+      <a class="js-page-link" href="install.html">Install<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                    <li data-page="rewrite" value="2">
+      <a class="js-page-link" href="rewrite.html">s-examples--3<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                    <li data-page="troubleshooting" value="3">
+      <a class="js-page-link" href="troubleshooting.html">Error: Drupal requires Prophecy PhpUnit when using PHPUnit 9 or greater.<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                    <li data-page="why" value="4">
+      <a class="js-page-link" href="why.html">Why Do You Need This?<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                    <li data-page="changelog" value="5">
+      <a class="js-page-link" href="changelog.html">Changelog<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                    <li data-page="readme" value="6">
+      <a class="js-page-link" href="readme.html">drupal-phpunit-integration<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                    <li data-page="conventional_vs_this_way" value="7">
+      <a class="js-page-link" href="conventional_vs_this_way.html">The Conventional Way, Then This Package's Way<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                                          <li data-page="developers" value="8">
+      <a class="js-page-link" href="../dev/developers.html">Developer Notes<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                    <li data-page="composer_autoload_dev" value="9">
+      <a class="js-page-link" href="../dev/composer_autoload_dev.html">Composer Autoload Dev<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                              </ol>
+      </div>
+        
+    <div class="js-chapter-list">
+              <h2 class="h4 mt-4">General</h2>
+        <ol>
+                                <li data-page="install" value="1">
+      <a class="js-page-link" href="install.html">Install</a>
+    </li>
+  
+                                <li data-page="rewrite" value="2">
+      <a class="js-page-link" href="rewrite.html">s-examples--3</a>
+    </li>
+  
+                                <li data-page="troubleshooting" value="3">
+      <a class="js-page-link" href="troubleshooting.html">Error: Drupal requires Prophecy PhpUnit when using PHPUnit 9 or greater.</a>
+    </li>
+  
+                                <li data-page="why" value="4">
+      <a class="js-page-link" href="why.html">Why Do You Need This?</a>
+    </li>
+  
+                                <li data-page="changelog" value="5">
+      <a class="js-page-link" href="changelog.html">Changelog</a>
+    </li>
+  
+                                <li data-page="readme" value="6">
+      <a class="js-page-link" href="readme.html">drupal-phpunit-integration</a>
+    </li>
+  
+                                <li data-page="conventional_vs_this_way" value="7">
+      <a class="js-page-link" href="conventional_vs_this_way.html">The Conventional Way, Then This Package's Way</a>
+    </li>
+  
+                  </ol>
+              <h2 class="h4 mt-4">Dev</h2>
+        <ol>
+                                <li data-page="developers" value="8">
+      <a class="js-page-link" href="../dev/developers.html">Developer Notes</a>
+    </li>
+  
+                                <li data-page="composer_autoload_dev" value="9">
+      <a class="js-page-link" href="../dev/composer_autoload_dev.html">Composer Autoload Dev</a>
+    </li>
+  
+                  </ol>
+          </div>
+  </div>
+</div>
+<div class="modal fade" id="modal" tabindex="-1"
+     aria-labelledby="modal-title" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="js-modal-title modal-title" id="modal-title"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mt-1 mb-4">
+                  </p>
+        
+                
+        <ul class="list-group list-group-flush">
+                                    <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="install.html">Install</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="rewrite.html">s-examples--3</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="troubleshooting.html">Error: Drupal requires Prophecy PhpUnit when using PHPUnit 9 or greater.</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="why.html">Why Do You Need This?</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="changelog.html">Changelog</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="readme.html">drupal-phpunit-integration</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="conventional_vs_this_way.html">The Conventional Way, Then This Package&#039;s Way</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="../dev/developers.html">Developer Notes</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="../dev/composer_autoload_dev.html">Composer Autoload Dev</a>
+                              </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=10.2.1"></script>
+  <script src="../../dist/lunr.js?ver=10.2.1"></script>
+  <script src="../../dist/knowledge.min.js?ver=10.2.1"></script>
+
+</body>
+</html>
