@@ -100,13 +100,15 @@ The installer writes placeholder paths for a module named `my_module` into `test
 ```xml
 <testsuites>
     <testsuite name="unit">
-        <directory>../web/modules/custom/alpha/tests/Unit/</directory>
+        <directory>../web/modules/custom/alpha/tests/src/Unit/</directory>
     </testsuite>
     <testsuite name="integration">
-        <directory>../web/modules/custom/alpha/tests/Integration/</directory>
+        <directory>../web/modules/custom/alpha/tests/src/Integration/</directory>
     </testsuite>
 </testsuites>
 ```
+
+Use `tests/src/Unit/` and `tests/src/Integration/`, not `tests/Unit/`/`tests/Integration/` — the extra `src/` segment is required for `tests/src/Unit/` to also be discovered by Drupal core's own conventional test runner (`vendor/bin/phpunit -c web/core`, drupal.org's GitLab CI) with zero configuration, the same way a Kernel or Functional test already is. See [The Conventional Way, Then This Package's Way](@conventional_vs_this_way) for why that one path segment matters.
 
 ### The runner
 
@@ -139,7 +141,7 @@ bin/run-phpunit-tests.sh --flush
 bin/run-phpunit-tests.sh --filter=FooTest
 
 # One file; paths relative to the project root work
-bin/run-phpunit-tests.sh web/modules/custom/alpha/tests/Integration/FooTest.php
+bin/run-phpunit-tests.sh web/modules/custom/alpha/tests/src/Integration/FooTest.php
 
 # HTML coverage report in tests_phpunit/reports (needs Xdebug or PCOV)
 bin/run-phpunit-tests.sh --coverage
@@ -155,13 +157,14 @@ web/modules/custom
     ├── src
     │   └── Foo.php
     └── tests
-        ├── Integration
-        │   └── FooTest.php
-        └── Unit
-            └── FooTest.php
+        └── src
+            ├── Integration
+            │   └── FooTest.php
+            └── Unit
+                └── FooTest.php
 ```
 
-`tests/Unit/FooTest.php` has no Drupal dependencies; it is plain PHPUnit and can run on its own. `tests/Integration/FooTest.php` uses Drupal classes, so it has to run through `bin/run-phpunit-tests.sh`, which loads them. Use the `Drupal\Tests\alpha\Unit` and `Drupal\Tests\alpha\Integration` namespaces:
+Both live under `tests/src/`, the same root Drupal core itself uses for `Kernel`/`Functional` — never under a bare `tests/Unit/` or `tests/Integration/`, which core's own test runner would never look inside. `tests/src/Unit/FooTest.php` has no Drupal dependencies; it is plain PHPUnit and can run on its own, including through `vendor/bin/phpunit -c web/core --testsuite=unit` with no trace of this package at all. `tests/src/Integration/FooTest.php` uses Drupal classes, so it has to run through `bin/run-phpunit-tests.sh`, which loads them; "integration" isn't a suite core defines, so this one only ever runs through this package regardless of its directory. Use the `Drupal\Tests\alpha\Unit` and `Drupal\Tests\alpha\Integration` namespaces:
 
 ```php
 namespace Drupal\Tests\alpha\Integration;
@@ -180,7 +183,7 @@ and declare them in the module's `composer.json` so the runner can autoload them
   },
   "autoload-dev": {
     "psr-4": {
-      "Drupal\\Tests\\alpha\\": "./tests/"
+      "Drupal\\Tests\\alpha\\": "./tests/src/"
     }
   }
 }

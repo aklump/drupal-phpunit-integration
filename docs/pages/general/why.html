@@ -7,7 +7,7 @@
       <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=10.2.1">
       <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=10.2.1">
       <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=10.2.1">
-        <title>Why do you Need This? | Book</title>
+        <title>Why Do You Need This? | Book</title>
   </head>
 <body class="my-5">
 
@@ -33,7 +33,7 @@
       </div>
       <div class="header__tags me-3">  </div>
       <div class="header__page-numbers flex-shrink-1">4
-        / 8</div>
+        / 9</div>
     </div>
   </div>
 </header>
@@ -41,14 +41,43 @@
 <main class="container-md flex-column">
   <div class="row mb-5 pt-5">
     <article class="col">
-      <h1 class="mb-4 text-primary">Why do you Need This?</h1>
+      <h1 class="mb-4 text-primary">Why Do You Need This?</h1>
       <ul>
 <li>https://www.drupal.org/docs/develop/automated-testing</li>
 <li>https://www.drupal.org/docs/develop/automated-testing/phpunit-in-drupal</li>
 </ul>
-<h2>True Unit Tests</h2>
-<p>Using this framework you can have unit tests that do not extend Drupal\Tests\UnitTestCase, so they are truely without any dependencies</p>
-<h2>Integration Tests</h2>
+<p>This package does two different things. Neither one changes what a "correct" Drupal test is, or invents a competing way to write one — see <a href="conventional_vs_this_way.html">The Conventional Way, Then This Package's Way</a> for a line-by-line comparison. This page is about <em>why</em> each half exists.</p>
+<h2>1. It fills a real gap: tests that use Drupal classes but need no bootstrap at all</h2>
+<p>Drupal's own test types sit at two extremes. <code>Drupal\Tests\UnitTestCase</code> still pulls in Drupal's test base classes and container plumbing, even for a test that doesn't touch the database. Kernel and functional tests need a real database and a bootstrapped site. A large amount of ordinary module code falls in the gap between those two: it type-hints Drupal interfaces (<code>EntityInterface</code>, <code>ConfigFactoryInterface</code>, …) and needs real Drupal classes to mock against, but its own logic is pure PHP — no query, no request, no filesystem.</p>
+<p>Core gives that code nowhere good to live — and this isn't a matter of degree, it's absolute. <code>core/tests/bootstrap.php</code> wires up the test autoloader with exactly two fixed, hardcoded namespaces per extension, derived purely from directory names (<code>Drupal\&lt;ext&gt;\</code> from <code>src/</code>, <code>Drupal\Tests\&lt;ext&gt;\</code> from <code>tests/src/</code>); it never opens any module's <code>composer.json</code>, so a module's own <code>autoload-dev</code> — a shared test trait, say, meant for other modules to reuse — is invisible to it, full stop. Composer itself wouldn't honor that declaration either way: its schema docs mark <code>autoload-dev</code> <code>[root-only]</code>, meaning it's only ever processed for the root project, never a dependency. Two independent reasons, same dead end.</p>
+<p>This package does give that code somewhere to live, with two test flavors that need nothing but plain PHPUnit and an autoloader:</p>
+<ul>
+<li><strong>Unit</strong> tests have zero Drupal dependency — no <code>UnitTestCase</code>, no bootstrap, no autoload-dev scanning. They run as fast as any PHP test ever runs.</li>
+<li><strong>Integration</strong> tests may use real Drupal classes (and this package's <code>MockDrupalEntityTrait</code> for realistic entity mocks), loaded from a namespace map this package builds once and caches by actually reading each module's own <code>autoload-dev</code> — the one thing neither Composer nor core's bootstrap does. See <a href="../dev/composer_autoload_dev.html">Composer Autoload Dev</a> for how.</li>
+</ul>
+<p>Neither flavor is a Drupal convention at all — core has no name for "a test that uses Drupal classes but boots nothing." This package invented one because the gap is real and common, not because core's own test types were insufficient at what <em>they</em> do. See <a href="conventional_vs_this_way.html">The Conventional Way, Then This Package's Way</a> for the two-independent-reasons case traced through actual source.</p>
+<h2>2. For the tests that do need Drupal's database (Kernel, Functional), it removes toil without changing the contract</h2>
+<p>This half is different in kind from the first: Kernel and Functional tests already have a fully conventional, fully sufficient way to run, defined by Drupal core itself — <code>core/phpunit.xml.dist</code>, two environment variables (<code>SIMPLETEST_DB</code>, <code>SIMPLETEST_BASE_URL</code>), and <code>drupal/core-dev</code>. This package does not replace, extend, or reinterpret that contract. It automates two specific pieces of manual toil in running it, confirmed by tracing core's own source and then proving the result against a real module's real tests:</p>
+<p><strong>Test discovery rescans the whole codebase, every single invocation.</strong> Core's own <code>KernelTestSuite</code>/<code>FunctionalTestSuite</code> classes call <code>addTestsBySuiteNamespace()</code>, which walks the entire Drupal root looking for every module's <code>tests/src/Kernel</code> or <code>tests/src/Functional</code> directory — on every <code>phpunit</code> run, with no caching, by design (it has to, since it doesn't know what changed). For a tight local edit-test loop, paying that scan on every single run is pure overhead. <code>BootstrapCache</code> caches the discovered namespace map to a file and only rebuilds it when you pass <code>--flush</code>.</p>
+<p><strong><code>SIMPLETEST_DB</code>/<code>SIMPLETEST_BASE_URL</code> are not static values you set once.</strong> They differ per developer machine, per Lando app, and sometimes per git branch if you keep more than one database fixture around. Nobody enjoys re-deriving a <code>mysql://</code> connection string or looking up today's Lando URL by hand before every test run, and "I forgot to export <code>SIMPLETEST_DB</code>" is one of the most frequently asked Drupal testing questions on record for exactly that reason. <code>DynamicConfig</code> resolves both automatically — your own exported value first, then your git branch's own <code>DATABASE_URL</code>, then a plain <code>DATABASE_URL</code>, then Lando, then <code>drush sql:connect</code> — and fails loudly with exact next steps when none of those produce a value, instead of letting the test suite blanket-fail with no explanation.</p>
+<h3>Proof, not assertion</h3>
+<p>The second half above isn't a hunch — the same test files this package would normally run were pointed directly at Drupal core's own <code>phpunit.xml.dist</code>, with both environment variables exported by hand, and no trace of this package anywhere in the invocation:</p>
+<pre><code class="shell">export SIMPLETEST_DB="mysql://drupal10:drupal10@database:3306/drupal10"
+export SIMPLETEST_BASE_URL="http://drupal10.local.loft/"
+vendor/bin/phpunit -c web/core --testsuite=kernel,functional --group auto_retina --testdox
+</code></pre>
+<pre><code>OK (18 tests, 39 assertions)
+</code></pre>
+<p>Eighteen tests, zero module-specific configuration beyond the two variables above, and zero involvement from this package — which is exactly the point: the tests this package runs for you are never special. It is free to disappear from the picture entirely, any time, with the same tests still passing the same way. What it buys you is not having to re-derive those two values and re-pay that discovery scan every time you want to run them.</p>
+<h2>The one rule that keeps this honest</h2>
+<p>Both of <code>DynamicConfig</code>'s values are set with a real <code>putenv()</code> call, not just a <code>$_ENV[...] = ...</code> assignment — and that distinction is not cosmetic. <code>KernelTestBase</code> and <code>BrowserTestBase</code> both declare <code>protected $runTestInSeparateProcess = TRUE;</code> in core itself, so PHPUnit forks a brand-new PHP process for <em>every single test method</em>. A plain <code>$_ENV</code> assignment lives only in the parent process's memory and never reaches that child; a real process environment variable, set via <code>putenv()</code>, is inherited across the fork the same way any shell <code>export</code> would be. Get this wrong — as this package's own <code>0.0.x</code> line did — and every Kernel/Functional test fails identically with a confusing "no database connection" or "no base URL" error that has nothing apparent to do with the test itself.</p>
+<p>The underlying design rule, worth restating for anyone extending this package: it must only ever compute the same value a developer would conventionally <code>export</code> by hand, and must deliver it the same way a real export would — never a parallel, package-specific mechanism that only works when this package is present. The day it stops doing that, it stops being "the same tests, faster" and becomes a second, incompatible way to test Drupal — which is the one thing it must never become.</p>
+<h2>Related topics</h2>
+<ul>
+<li><a href="conventional_vs_this_way.html">The Conventional Way, Then This Package's Way</a></li>
+<li><a href="../dev/composer_autoload_dev.html">Composer Autoload Dev</a></li>
+<li><a href="install.html">Install</a></li>
+</ul>
     </article>
   </div>
 </main>
@@ -58,7 +87,7 @@
               Version:
         <strong>10.2.1</strong>
         &bull;
-                    Last Update: <strong>10/4/2026</strong>
+                    Last Update: <strong>10/21/2026</strong>
           </div>
   </footer>
 
@@ -132,7 +161,7 @@
     </li>
   
                                     <li data-page="why" value="4">
-      <a class="js-page-link" href="why.html">Why do you Need This?<span
+      <a class="js-page-link" href="why.html">Why Do You Need This?<span
               class="js-search-score
               badge
               bg-info rounded-pill badge-sm"></span></a>
@@ -152,14 +181,21 @@
               bg-info rounded-pill badge-sm"></span></a>
     </li>
   
-                                                          <li data-page="developers" value="7">
+                                    <li data-page="conventional_vs_this_way" value="7">
+      <a class="js-page-link" href="conventional_vs_this_way.html">The Conventional Way, Then This Package's Way<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                                          <li data-page="developers" value="8">
       <a class="js-page-link" href="../dev/developers.html">Developer Notes<span
               class="js-search-score
               badge
               bg-info rounded-pill badge-sm"></span></a>
     </li>
   
-                                    <li data-page="composer_autoload_dev" value="8">
+                                    <li data-page="composer_autoload_dev" value="9">
       <a class="js-page-link" href="../dev/composer_autoload_dev.html">Composer Autoload Dev<span
               class="js-search-score
               badge
@@ -185,7 +221,7 @@
     </li>
   
                                 <li data-page="why" value="4">
-      <a class="js-page-link" href="why.html">Why do you Need This?</a>
+      <a class="js-page-link" href="why.html">Why Do You Need This?</a>
     </li>
   
                                 <li data-page="changelog" value="5">
@@ -196,14 +232,18 @@
       <a class="js-page-link" href="readme.html">drupal-phpunit-integration</a>
     </li>
   
+                                <li data-page="conventional_vs_this_way" value="7">
+      <a class="js-page-link" href="conventional_vs_this_way.html">The Conventional Way, Then This Package's Way</a>
+    </li>
+  
                   </ol>
               <h2 class="h4 mt-4">Dev</h2>
         <ol>
-                                <li data-page="developers" value="7">
+                                <li data-page="developers" value="8">
       <a class="js-page-link" href="../dev/developers.html">Developer Notes</a>
     </li>
   
-                                <li data-page="composer_autoload_dev" value="8">
+                                <li data-page="composer_autoload_dev" value="9">
       <a class="js-page-link" href="../dev/composer_autoload_dev.html">Composer Autoload Dev</a>
     </li>
   
@@ -232,11 +272,13 @@
                                                 <a class="list-group-item list-group-item-action"
                  data-tags="[]" href="troubleshooting.html">Error: Drupal requires Prophecy PhpUnit when using PHPUnit 9 or greater.</a>
                                                 <a class="list-group-item list-group-item-action"
-                 data-tags="[]" href="why.html">Why do you Need This?</a>
+                 data-tags="[]" href="why.html">Why Do You Need This?</a>
                                                 <a class="list-group-item list-group-item-action"
                  data-tags="[]" href="changelog.html">Changelog</a>
                                                 <a class="list-group-item list-group-item-action"
                  data-tags="[]" href="readme.html">drupal-phpunit-integration</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="conventional_vs_this_way.html">The Conventional Way, Then This Package&#039;s Way</a>
                                                 <a class="list-group-item list-group-item-action"
                  data-tags="[]" href="../dev/developers.html">Developer Notes</a>
                                                 <a class="list-group-item list-group-item-action"

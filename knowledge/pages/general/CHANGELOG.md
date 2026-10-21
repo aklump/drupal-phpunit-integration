@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.2.2] - 2026-10-21
+
 ### Changed
 
 - **Breaking:** the documented directory for Unit and Integration tests is now `tests/src/Unit/` and `tests/src/Integration/`, not `tests/Unit/` and `tests/Integration/`. The `src/` segment matters: Drupal core's own test runner (`vendor/bin/phpunit -c web/core`, drupal.org's GitLab CI) discovers `tests/src/Unit/` automatically, with no bootstrap and no trace of this package, the same way it already discovers Kernel and Functional tests — the old path was invisible to it for no technical reason. Existing projects should move their `tests/Unit/` and `tests/Integration/` directories (and the matching `autoload-dev` PSR-4 path and `<testsuite><directory>` entries in `phpunit.xml`) to `tests/src/Unit/` and `tests/src/Integration/`.
@@ -38,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The installer exited with "Runner script not found" at its last step because it looked for `init/run_*.sh` and the runner is `init/run-phpunit-tests.sh`.
 
 ## [10.0.0] - 2025-11-27
-  
+
 ### Changed
 
 - Bumped version to match the PhpUnit version supported, e.g. 10.

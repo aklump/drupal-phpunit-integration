@@ -33,7 +33,7 @@
       </div>
       <div class="header__tags me-3">  </div>
       <div class="header__page-numbers flex-shrink-1">6
-        / 8</div>
+        / 9</div>
     </div>
   </div>
 </header>
@@ -110,13 +110,14 @@ diff ../web/core/phpunit.xml.dist phpunit.xml
 <p>The installer writes placeholder paths for a module named <code>my_module</code> into <code>tests_phpunit/phpunit.xml</code>. Open it and replace the <code>&lt;testsuites&gt;</code> directories and the <code>&lt;source&gt;&lt;include&gt;</code> directory with your real paths, relative to <code>tests_phpunit/</code>. It is convenient to list your modules' unit tests here as well, so both kinds run together:</p>
 <pre><code class="xml">&lt;testsuites&gt;
     &lt;testsuite name="unit"&gt;
-        &lt;directory&gt;../web/modules/custom/alpha/tests/Unit/&lt;/directory&gt;
+        &lt;directory&gt;../web/modules/custom/alpha/tests/src/Unit/&lt;/directory&gt;
     &lt;/testsuite&gt;
     &lt;testsuite name="integration"&gt;
-        &lt;directory&gt;../web/modules/custom/alpha/tests/Integration/&lt;/directory&gt;
+        &lt;directory&gt;../web/modules/custom/alpha/tests/src/Integration/&lt;/directory&gt;
     &lt;/testsuite&gt;
 &lt;/testsuites&gt;
 </code></pre>
+<p>Use <code>tests/src/Unit/</code> and <code>tests/src/Integration/</code>, not <code>tests/Unit/</code>/<code>tests/Integration/</code> — the extra <code>src/</code> segment is required for <code>tests/src/Unit/</code> to also be discovered by Drupal core's own conventional test runner (<code>vendor/bin/phpunit -c web/core</code>, drupal.org's GitLab CI) with zero configuration, the same way a Kernel or Functional test already is. See <a href="conventional_vs_this_way.html">The Conventional Way, Then This Package's Way</a> for why that one path segment matters.</p>
 <h3>The runner</h3>
 <p><code>bin/run-phpunit-tests.sh</code> has a configuration block at the top: <code>INSTALL_PATH</code>, <code>DRUPAL_ROOT</code> and <code>VENDOR_PATH</code> (relative to the script), <code>CODE_COVERAGE</code> to always generate coverage, <code>PHPUNIT_ARGS</code> for default PHPUnit arguments, and an optional <code>PHP_BIN</code> directory to put first on <code>PATH</code>.</p>
 <h3>Database and base URL</h3>
@@ -141,7 +142,7 @@ bin/run-phpunit-tests.sh --flush
 bin/run-phpunit-tests.sh --filter=FooTest
 
 # One file; paths relative to the project root work
-bin/run-phpunit-tests.sh web/modules/custom/alpha/tests/Integration/FooTest.php
+bin/run-phpunit-tests.sh web/modules/custom/alpha/tests/src/Integration/FooTest.php
 
 # HTML coverage report in tests_phpunit/reports (needs Xdebug or PCOV)
 bin/run-phpunit-tests.sh --coverage
@@ -153,12 +154,13 @@ bin/run-phpunit-tests.sh --coverage
     ├── src
     │   └── Foo.php
     └── tests
-        ├── Integration
-        │   └── FooTest.php
-        └── Unit
-            └── FooTest.php
+        └── src
+            ├── Integration
+            │   └── FooTest.php
+            └── Unit
+                └── FooTest.php
 </code></pre>
-<p><code>tests/Unit/FooTest.php</code> has no Drupal dependencies; it is plain PHPUnit and can run on its own. <code>tests/Integration/FooTest.php</code> uses Drupal classes, so it has to run through <code>bin/run-phpunit-tests.sh</code>, which loads them. Use the <code>Drupal\Tests\alpha\Unit</code> and <code>Drupal\Tests\alpha\Integration</code> namespaces:</p>
+<p>Both live under <code>tests/src/</code>, the same root Drupal core itself uses for <code>Kernel</code>/<code>Functional</code> — never under a bare <code>tests/Unit/</code> or <code>tests/Integration/</code>, which core's own test runner would never look inside. <code>tests/src/Unit/FooTest.php</code> has no Drupal dependencies; it is plain PHPUnit and can run on its own, including through <code>vendor/bin/phpunit -c web/core --testsuite=unit</code> with no trace of this package at all. <code>tests/src/Integration/FooTest.php</code> uses Drupal classes, so it has to run through <code>bin/run-phpunit-tests.sh</code>, which loads them; "integration" isn't a suite core defines, so this one only ever runs through this package regardless of its directory. Use the <code>Drupal\Tests\alpha\Unit</code> and <code>Drupal\Tests\alpha\Integration</code> namespaces:</p>
 <pre><code class="php">namespace Drupal\Tests\alpha\Integration;
 
 class FooTest extends \PHPUnit\Framework\TestCase {
@@ -172,7 +174,7 @@ class FooTest extends \PHPUnit\Framework\TestCase {
   },
   "autoload-dev": {
     "psr-4": {
-      "Drupal\\Tests\\alpha\\": "./tests/"
+      "Drupal\\Tests\\alpha\\": "./tests/src/"
     }
   }
 }
@@ -214,7 +216,7 @@ final class FooTest extends \PHPUnit\Framework\TestCase {
               Version:
         <strong>10.2.1</strong>
         &bull;
-                    Last Update: <strong>10/4/2026</strong>
+                    Last Update: <strong>10/21/2026</strong>
           </div>
   </footer>
 
@@ -237,8 +239,8 @@ final class FooTest extends \PHPUnit\Framework\TestCase {
        aria-controls="table-of-contents"><i class="bi
            bi-list-ol"></i></a>
     
-              <a href="../dev/developers.html" class="btn nav__next-page js-nav__next-page
-    btn-primary"><i class="bi bi-file-earmark"></i> Developer Notes <i class="bi
+              <a href="conventional_vs_this_way.html" class="btn nav__next-page js-nav__next-page
+    btn-primary"><i class="bi bi-file-earmark"></i> The Conventional Way, Then This Package's Way <i class="bi
        bi-caret-right-fill"></i></a>
   
     
@@ -288,7 +290,7 @@ final class FooTest extends \PHPUnit\Framework\TestCase {
     </li>
   
                                     <li data-page="why" value="4">
-      <a class="js-page-link" href="why.html">Why do you Need This?<span
+      <a class="js-page-link" href="why.html">Why Do You Need This?<span
               class="js-search-score
               badge
               bg-info rounded-pill badge-sm"></span></a>
@@ -308,14 +310,21 @@ final class FooTest extends \PHPUnit\Framework\TestCase {
               bg-info rounded-pill badge-sm"></span></a>
     </li>
   
-                                                          <li data-page="developers" value="7">
+                                    <li data-page="conventional_vs_this_way" value="7">
+      <a class="js-page-link" href="conventional_vs_this_way.html">The Conventional Way, Then This Package's Way<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                                          <li data-page="developers" value="8">
       <a class="js-page-link" href="../dev/developers.html">Developer Notes<span
               class="js-search-score
               badge
               bg-info rounded-pill badge-sm"></span></a>
     </li>
   
-                                    <li data-page="composer_autoload_dev" value="8">
+                                    <li data-page="composer_autoload_dev" value="9">
       <a class="js-page-link" href="../dev/composer_autoload_dev.html">Composer Autoload Dev<span
               class="js-search-score
               badge
@@ -341,7 +350,7 @@ final class FooTest extends \PHPUnit\Framework\TestCase {
     </li>
   
                                 <li data-page="why" value="4">
-      <a class="js-page-link" href="why.html">Why do you Need This?</a>
+      <a class="js-page-link" href="why.html">Why Do You Need This?</a>
     </li>
   
                                 <li data-page="changelog" value="5">
@@ -352,14 +361,18 @@ final class FooTest extends \PHPUnit\Framework\TestCase {
       <a class="js-page-link" href="readme.html">drupal-phpunit-integration</a>
     </li>
   
+                                <li data-page="conventional_vs_this_way" value="7">
+      <a class="js-page-link" href="conventional_vs_this_way.html">The Conventional Way, Then This Package's Way</a>
+    </li>
+  
                   </ol>
               <h2 class="h4 mt-4">Dev</h2>
         <ol>
-                                <li data-page="developers" value="7">
+                                <li data-page="developers" value="8">
       <a class="js-page-link" href="../dev/developers.html">Developer Notes</a>
     </li>
   
-                                <li data-page="composer_autoload_dev" value="8">
+                                <li data-page="composer_autoload_dev" value="9">
       <a class="js-page-link" href="../dev/composer_autoload_dev.html">Composer Autoload Dev</a>
     </li>
   
@@ -388,11 +401,13 @@ final class FooTest extends \PHPUnit\Framework\TestCase {
                                                 <a class="list-group-item list-group-item-action"
                  data-tags="[]" href="troubleshooting.html">Error: Drupal requires Prophecy PhpUnit when using PHPUnit 9 or greater.</a>
                                                 <a class="list-group-item list-group-item-action"
-                 data-tags="[]" href="why.html">Why do you Need This?</a>
+                 data-tags="[]" href="why.html">Why Do You Need This?</a>
                                                 <a class="list-group-item list-group-item-action"
                  data-tags="[]" href="changelog.html">Changelog</a>
                                                 <a class="list-group-item list-group-item-action"
                  data-tags="[]" href="readme.html">drupal-phpunit-integration</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="conventional_vs_this_way.html">The Conventional Way, Then This Package&#039;s Way</a>
                                                 <a class="list-group-item list-group-item-action"
                  data-tags="[]" href="../dev/developers.html">Developer Notes</a>
                                                 <a class="list-group-item list-group-item-action"
