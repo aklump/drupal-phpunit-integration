@@ -12,7 +12,6 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\TypedData\DataReferenceInterface;
 use Drupal\user\UserInterface;
 
-#[AllowDynamicProperties]
 trait MockDrupalEntityTrait {
 
   /**
