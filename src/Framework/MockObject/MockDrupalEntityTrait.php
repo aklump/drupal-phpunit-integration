@@ -40,7 +40,7 @@ trait MockDrupalEntityTrait {
    * @return (\Drupal\Core\Entity\EntityInterface&\PHPUnit\Framework\MockObject\MockObject)
    */
   public function createEntityMock(string $entity_type_id, string $bundle, array $fields = [], string $entity_type_label = '', string $class_to_mock = NULL) {
-    $class_to_mock = $class_to_mock ?? FieldableEntityInterface::class;
+    $class_to_mock = $this->getDynamicPropertyMockableClass($class_to_mock ?? FieldableEntityInterface::class);
 
     $mock_entity = $this->createConfiguredMock($class_to_mock, [
       'getEntityTypeId' => $entity_type_id,
@@ -186,6 +186,47 @@ trait MockDrupalEntityTrait {
     (new MakeMockIterable())($field_item, $field_item_value);
 
     return $field_item;
+  }
+
+  /**
+   * Get a mockable class that tolerates dynamic properties.
+   *
+   * The entity mocks expose each field as a property, e.g.
+   * `$entity->field_foo`, as real entities do via `__get()`. A mock of a bare
+   * interface has no declared properties, so assigning them is deprecated as
+   * of PHP 8.2. Mocking an abstract class that implements the interface and
+   * allows dynamic properties avoids this; the attribute is inherited by the
+   * generated mock.
+   *
+   * @param string $class_to_mock
+   *   The interface or class the mock should satisfy.
+   *
+   * @return string
+   *   A class name to pass to the mock builder.
+   */
+  private function getDynamicPropertyMockableClass(string $class_to_mock): string {
+    if (!interface_exists($class_to_mock)) {
+      return $class_to_mock;
+    }
+
+    // Derived from the interface so every class using this trait shares one
+    // generated class; a static variable here would be per-using-class.
+    $name = 'AKlumpDynamicPropertyMock_' . md5($class_to_mock);
+    if (!class_exists($name, FALSE)) {
+      $implements = '\\' . ltrim($class_to_mock, '\\');
+      // An interface extending \Traversable directly (as ContentEntityInterface
+      // does) can only be implemented by a class that is also an Iterator or
+      // IteratorAggregate.
+      $traversable = is_subclass_of($class_to_mock, \Traversable::class)
+        && !is_subclass_of($class_to_mock, \Iterator::class)
+        && !is_subclass_of($class_to_mock, \IteratorAggregate::class);
+      if ($traversable) {
+        $implements = '\\IteratorAggregate, ' . $implements;
+      }
+      eval("#[\\AllowDynamicProperties]\nabstract class $name implements $implements {}");
+    }
+
+    return $name;
   }
 
 }
