@@ -94,6 +94,26 @@ export DRUPAL_ROOT
 export INSTALL_PATH
 export VENDOR_PATH
 
+# ========= Stale autoload cache detection =========
+# The bootstrap caches Drupal's namespace map in .bootstrap.cache and only
+# rebuilds it on --flush.  Adding, removing, moving or re-symlinking a module
+# leaves that map pointing at paths that no longer exist (`Class "..." not
+# found`).  Adding or removing an entry changes its parent directory's mtime,
+# so flush when any of those directories is newer than the cache.  This uses
+# only bash builtins (no forks) to keep cached runs fast; the trade-off is that
+# only modules/, themes/, profiles/ and their direct subdirectories (contrib/,
+# custom/, ...) are watched.  A module nested deeper still needs `--flush`.
+bootstrap_cache="$INSTALL_PATH/.bootstrap.cache"
+if [[ -f "$bootstrap_cache" ]]; then
+  for watched_dir in "$DRUPAL_ROOT"/{modules,themes,profiles}{,/*}/; do
+    if [[ "$watched_dir" -nt "$bootstrap_cache" ]]; then
+      echo "♻️  Module layout changed; flushing the stale autoload map cache." >&2
+      rm -f "$bootstrap_cache"
+      break
+    fi
+  done
+fi
+
 # ========= Bootstrap Drupal =========
 skip_next_arg=false
 
