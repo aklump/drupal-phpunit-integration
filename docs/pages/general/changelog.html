@@ -4,9 +4,9 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=10.1.1">
-      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=10.1.1">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=10.1.1">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=10.2.2">
+      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=10.2.2">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=10.2.2">
         <title>Changelog | Book</title>
   </head>
 <body class="my-5">
@@ -45,6 +45,16 @@
       <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
 and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<h2>[Unreleased]</h2>
+<h2>[9.3.1] - 2026-10-21</h2>
+<h3>Added</h3>
+<ul>
+<li><em>init/run-phpunit-tests.sh</em> now flushes the autoload map cache automatically when a module is added, removed, moved or re-symlinked, instead of failing with <code>Class "..." not found</code> until <code>--flush</code> is run. It compares directory mtimes to the cache file using bash builtins only (no added run time), so only <em>modules</em>, <em>themes</em>, <em>profiles</em> and their direct subdirectories (e.g. <em>contrib</em>, <em>custom</em>) are watched; a module nested deeper still needs <code>--flush</code>. Copy the new block into your copy of the runner.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li><code>createEntityMock()</code> and <code>createUserMock()</code> no longer trigger PHP 8.2 "Creation of dynamic property" deprecations when exposing fields as properties on the mocked entity.</li>
+</ul>
 <h2>[9.0.0] - 2025-11-27</h2>
 <h3>Changed</h3>
 <ul>
@@ -119,9 +129,9 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
   <footer class="footer d-flex justify-content-center">
     <div class="flex-column justify-content-center">
               Version:
-        <strong>10.1.1</strong>
+        <strong>10.2.2</strong>
         &bull;
-                    Last Update: <strong>9/22/2026</strong>
+                    Last Update: <strong>10/21/2026</strong>
           </div>
   </footer>
 
@@ -310,9 +320,9 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
   </div>
 </div>
 
-  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=10.1.1"></script>
-  <script src="../../dist/lunr.js?ver=10.1.1"></script>
-  <script src="../../dist/knowledge.min.js?ver=10.1.1"></script>
+  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=10.2.2"></script>
+  <script src="../../dist/lunr.js?ver=10.2.2"></script>
+  <script src="../../dist/knowledge.min.js?ver=10.2.2"></script>
 
 </body>
 </html>
