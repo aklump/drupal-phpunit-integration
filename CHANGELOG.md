@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.3.1] - 2026-10-21
+
 ### Added
 
 - _init/run-phpunit-tests.sh_ now flushes the autoload map cache automatically when a module is added, removed, moved or re-symlinked, instead of failing with `Class "..." not found` until `--flush` is run. It compares directory mtimes to the cache file using bash builtins only (no added run time), so only _modules_, _themes_, _profiles_ and their direct subdirectories (e.g. _contrib_, _custom_) are watched; a module nested deeper still needs `--flush`. Copy the new block into your copy of the runner.
