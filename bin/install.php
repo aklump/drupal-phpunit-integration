@@ -348,6 +348,7 @@ if (!file_exists($runner_path)) {
   if ($runner_template && !file_exists($runner_path)) {
     echo "Copying runner script to " . $runner_path . "\n";
     copy($runner_template, $runner_path);
+    chmod($runner_path, 0755);
 
     // Point the runner at the configured locations (relative to bin/).
     $bin = APP_ROOT . '/bin';
