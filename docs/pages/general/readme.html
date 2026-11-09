@@ -4,9 +4,9 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=10.2.1">
-      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=10.2.1">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=10.2.1">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=10.2.2">
+      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=10.2.2">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=10.2.2">
         <title>drupal-phpunit-integration | Book</title>
   </head>
 <body class="my-5">
@@ -49,7 +49,13 @@
 <p>Drupal's own test types sit at two extremes: <code>UnitTestCase</code> still pulls in Drupal's test base classes, and kernel and functional tests need a database and a bootstrapped site. Much custom module code falls in between: it uses Drupal interfaces and classes, but its logic can be tested with plain PHPUnit and a few mocks. This package gives that code a home. It installs a separate PHPUnit project in <code>tests_phpunit/</code> next to your Drupal site, autoloads Drupal core and your modules' <code>autoload-dev</code> namespaces from a cache that is built once and reused, and gives you a runner script, <code>bin/run-phpunit-tests.sh</code>, that points PHPUnit at the right configuration from anywhere in the project. When your tests do need Drupal's database, it fills in <code>SIMPLETEST_DB</code> and <code>SIMPLETEST_BASE_URL</code> for you from your environment, Lando or Drush.</p>
 <h2>Quick Start</h2>
 <p>From the root of a Composer-based Drupal project (the directory that contains <code>web/core</code>):</p>
+<h3>Drupal 11+</h3>
 <pre><code class="shell">curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.php | php
+</code></pre>
+<h3>Older Drupal</h3>
+<pre><code class="shell">curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.php \
+  | DRUPAL_PHPUNIT_INTEGRATION_VERSION='^9' \
+    php
 </code></pre>
 <p>The installer creates <code>tests_phpunit/</code>, requires this package into it, adds <code>drupal/core-dev</code> to your project if it is missing, copies Drupal core's <code>phpunit.xml.dist</code> to <code>tests_phpunit/phpunit.xml</code> and copies the runner to <code>bin/run-phpunit-tests.sh</code>. It ends with:</p>
 <pre><code class="text">## Final step
@@ -108,7 +114,8 @@ diff ../web/core/phpunit.xml.dist phpunit.xml
 <h2>Configuration</h2>
 <h3>Test suites and source paths</h3>
 <p>The installer writes placeholder paths for a module named <code>my_module</code> into <code>tests_phpunit/phpunit.xml</code>. Open it and replace the <code>&lt;testsuites&gt;</code> directories and the <code>&lt;source&gt;&lt;include&gt;</code> directory with your real paths, relative to <code>tests_phpunit/</code>. It is convenient to list your modules' unit tests here as well, so both kinds run together:</p>
-<pre><code class="xml">&lt;testsuites&gt;
+<pre><code class="xml">
+&lt;testsuites&gt;
     &lt;testsuite name="unit"&gt;
         &lt;directory&gt;../web/modules/custom/alpha/tests/src/Unit/&lt;/directory&gt;
     &lt;/testsuite&gt;
@@ -214,9 +221,9 @@ final class FooTest extends \PHPUnit\Framework\TestCase {
   <footer class="footer d-flex justify-content-center">
     <div class="flex-column justify-content-center">
               Version:
-        <strong>10.2.1</strong>
+        <strong>10.2.2</strong>
         &bull;
-                    Last Update: <strong>10/21/2026</strong>
+                    Last Update: <strong>11/9/2026</strong>
           </div>
   </footer>
 
@@ -418,9 +425,9 @@ final class FooTest extends \PHPUnit\Framework\TestCase {
   </div>
 </div>
 
-  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=10.2.1"></script>
-  <script src="../../dist/lunr.js?ver=10.2.1"></script>
-  <script src="../../dist/knowledge.min.js?ver=10.2.1"></script>
+  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=10.2.2"></script>
+  <script src="../../dist/lunr.js?ver=10.2.2"></script>
+  <script src="../../dist/knowledge.min.js?ver=10.2.2"></script>
 
 </body>
 </html>
