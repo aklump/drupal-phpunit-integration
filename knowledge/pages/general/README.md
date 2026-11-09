@@ -17,8 +17,18 @@ Drupal's own test types sit at two extremes: `UnitTestCase` still pulls in Drupa
 
 From the root of a Composer-based Drupal project (the directory that contains `web/core`):
 
+### Drupal 11+
+
 ```shell
 curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.php | php
+```
+
+### Older Drupal
+
+```shell
+curl -sSL https://raw.githubusercontent.com/aklump/drupal-phpunit-integration/main/bin/install.php \
+  | DRUPAL_PHPUNIT_INTEGRATION_VERSION='^9' \
+    php
 ```
 
 The installer creates `tests_phpunit/`, requires this package into it, adds `drupal/core-dev` to your project if it is missing, copies Drupal core's `phpunit.xml.dist` to `tests_phpunit/phpunit.xml` and copies the runner to `bin/run-phpunit-tests.sh`. It ends with:
@@ -49,11 +59,11 @@ bin/run-phpunit-tests.sh --flush
 
 The Quick Start command is the supported install. It refuses to run if the install path already exists. Three settings are optional environment variables. Set them on the `php` side of the pipe, not before `curl`:
 
-| Variable | Default | Meaning |
-| --- | --- | --- |
-| `DRUPAL_PHPUNIT_INTEGRATION_VERSION` | `dev-main` | The Composer constraint for this package, e.g. `^9` for PHPUnit 9 |
-| `DRUPAL_PHPUNIT_INTEGRATION_INSTALL_PATH` | `tests_phpunit` | Where to install; absolute, or relative to the directory you run it from |
-| `DRUPAL_PHPUNIT_INTEGRATION_DRUPAL_CORE` | `web/core` | Where Drupal core is; absolute, or relative to the directory you run it from |
+| Variable                                  | Default         | Meaning                                                                      |
+|-------------------------------------------|-----------------|------------------------------------------------------------------------------|
+| `DRUPAL_PHPUNIT_INTEGRATION_VERSION`      | `dev-main`      | The Composer constraint for this package, e.g. `^9` for PHPUnit 9            |
+| `DRUPAL_PHPUNIT_INTEGRATION_INSTALL_PATH` | `tests_phpunit` | Where to install; absolute, or relative to the directory you run it from     |
+| `DRUPAL_PHPUNIT_INTEGRATION_DRUPAL_CORE`  | `web/core`      | Where Drupal core is; absolute, or relative to the directory you run it from |
 
 For example, to install the 9.x line into `qa/phpunit` on a site whose webroot is `docroot/`:
 
@@ -103,6 +113,7 @@ diff ../web/core/phpunit.xml.dist phpunit.xml
 The installer writes placeholder paths for a module named `my_module` into `tests_phpunit/phpunit.xml`. Open it and replace the `<testsuites>` directories and the `<source><include>` directory with your real paths, relative to `tests_phpunit/`. It is convenient to list your modules' unit tests here as well, so both kinds run together:
 
 ```xml
+
 <testsuites>
     <testsuite name="unit">
         <directory>../web/modules/custom/alpha/tests/src/Unit/</directory>
