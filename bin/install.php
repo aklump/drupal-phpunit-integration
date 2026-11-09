@@ -153,7 +153,7 @@ $composer_json = [
   ],
 ];
 $write = [
-  INSTALL_PATH . '/.gitignore' => "/vendor/\n*/.cache\n/.phpunit.cache\n/reports/\n",
+  INSTALL_PATH . '/.gitignore' => "/vendor/\n*/.cache\n/.phpunit.cache\n/reports/\n/.bootstrap.cache\n",
   INSTALL_PATH . '/composer.json' => json_encode($composer_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n",
 ];
 foreach ($write as $path => $contents) {
